@@ -1,0 +1,155 @@
+import mongoose from 'mongoose';
+import procesesDB, { IProcess } from '../models/Processes';
+import usersDB, { IUser } from '../models/Users';
+import sectionsDB, { ISection } from '../models/Sections';
+import processStatesDB, { IProcessState } from '../models/ProcessStates';
+import yearsDB, { IYear } from '../models/Years';
+import filesDB from '../models/Files';
+import { Request, Response } from 'express';
+import { ProcessRequest, SectionRequest, YearRequest } from '../types/types';
+import { processValidator } from '../config/validators';
+
+class ProcessesController {
+    async store(req: Request, res: Response): Promise<Response> {
+        const session = await mongoose.startSession();
+        try {
+            const body = req.body as Partial<ProcessRequest>;
+            const bodyValidation: Partial<ProcessRequest>[] = processValidator(body);
+            if (bodyValidation.length > 0) return res.status(400).json({ errors: bodyValidation });
+            const user: IUser | null = await usersDB.findOne({ _id: body.user as string });
+            if (!user) return res.status(404).json({ error: 'User não encontrado!' });
+            const section: ISection | null = await sectionsDB.findOne({ _id: body.origin } as Partial<SectionRequest>);
+            if (!section) return res.status(404).json({ error: 'Section não encontrada!' });
+            session.startTransaction();
+            const year: IYear | null = await yearsDB.findOne({ year: new Date().getFullYear().toString() });
+            if (!year) yearsDB.create({ year: body.year } as Partial<YearRequest>, session);
+            const process: IProcess | null = await procesesDB.create(body, session);
+            const newState: IProcessState = {
+                process: process._id as string,
+                state: 'Processo Cadastrado',
+                anotation: `Processo Cadastrado Por ${user.pg} ${user.name}`,
+                date: undefined,
+            };
+            const state: IProcessState = await processStatesDB.create(newState, session);
+            await session.commitTransaction();
+            return res.status(201).json({ process, state });
+        } catch (error) {
+            console.log(error);
+            await session.abortTransaction();
+            return res.status(500).json({ error: (error as Record<string, string>).message });
+        } finally {
+            session.endSession();
+        }
+    }
+
+    async index(req: Request, res: Response): Promise<Response> {
+        try {
+            const query = req.query as Partial<ProcessRequest>;
+            const { select, include, sort, limit, page, aggregate } = query;
+            const fields: (keyof IProcess)[] = procesesDB.fields();
+            const parameter: Partial<ProcessRequest> = {};
+            const param = fields.filter((element) => Object.keys(query).includes(element));
+            const queryValidation: Partial<ProcessRequest>[] = processValidator(query);
+            if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
+            if (aggregate) {
+                param.forEach((element) => (parameter[element] = `${query[element]}`));
+                const processes = await procesesDB.aggregate(parameter, sort as string, limit as number, page as number, aggregate as string);
+                return res.status(200).json({ processes });
+            }
+            param.forEach((element) => {
+                element === '_id' || element === 'user' || element === 'receiver' || element === 'section_receiver' || element === 'origin'
+                    ? (parameter[element] = `${query[element]}`)
+                    : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
+            });
+            const processes: IProcess[] | null = await procesesDB.findAll(
+                parameter,
+                select as string,
+                include as string,
+                sort as string,
+                limit as number,
+                page as number
+            );
+            if (processes?.length === 0) return res.status(404).json({ error: 'Process não encontrado!' });
+            return res.status(200).json({ processes });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ error: (error as Record<string, string>).message });
+        }
+    }
+
+    async show(req: Request, res: Response): Promise<Response> {
+        try {
+            const query = req.query as Partial<ProcessRequest>;
+            const { select, include } = query;
+            const fields: (keyof IProcess)[] = procesesDB.fields();
+            const parameter: Partial<ProcessRequest> = {};
+            const param = fields.filter((element) => Object.keys(query).includes(element));
+            const queryValidation: Partial<ProcessRequest>[] = processValidator(query);
+            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
+            if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
+            param.forEach((element) => (parameter[element] = `${query[element]}`));
+            const process: IProcess | null = await procesesDB.findOne(parameter, select as string, include as string);
+            if (!process) return res.status(400).json({ error: 'Process não encontrado' });
+            return res.status(200).json({ process });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ error: (error as Record<string, string>).message });
+        }
+    }
+
+    async update(req: Request, res: Response): Promise<Response> {
+        try {
+            const query = req.query as Partial<ProcessRequest>;
+            const body = req.body as Partial<ProcessRequest>;
+            const fields: (keyof IProcess)[] = procesesDB.fields();
+            const parameter: Partial<ProcessRequest> = {};
+            const param = fields.filter((element) => Object.keys(query).includes(element));
+            const queryValidation: Partial<ProcessRequest>[] = processValidator(query);
+            const bodyValidation: Partial<ProcessRequest>[] = processValidator(body);
+            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
+            if (queryValidation.length > 0 || bodyValidation.length > 0) return res.status(400).json({ errors: queryValidation.concat(bodyValidation) });
+            param.forEach((element) => (parameter[element] = `${query[element]}`));
+            const process: IProcess | null = await procesesDB.findOne(parameter);
+            if (!process) return res.status(404).json({ error: 'Process não encontrado' });
+            if (body.origin) {
+                const section: ISection | null = await sectionsDB.findOne({ _id: body.origin } as Partial<SectionRequest>);
+                if (!section) return res.status(404).json({ error: 'Section não encontrada!' });
+            }
+            const processU = await procesesDB.updateOne(parameter, body);
+            return res.status(200).json({ processU });
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({ error: (error as Record<string, string>).message });
+        }
+    }
+
+    async delete(req: Request, res: Response): Promise<Response> {
+        const session = await mongoose.startSession();
+        try {
+            const query = req.query as Partial<ProcessRequest>;
+            const fields: (keyof IProcess)[] = procesesDB.fields();
+            const parameter: Partial<ProcessRequest> = {};
+            const param = fields.filter((element) => Object.keys(query).includes(element));
+            const queryValidation: Partial<ProcessRequest>[] = processValidator(query);
+            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválid!' });
+            if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
+            param.forEach((element) => (parameter[element] = `${query[element]}`));
+            const process: IProcess | null = await procesesDB.findOne(parameter);
+            if (!process) return res.status(404).json({ error: 'Process não encontrado!' });
+            session.startTransaction();
+            const statesD = await processStatesDB.deleteMany({ process: process._id }, session);
+            const filesD = await filesDB.deleteMany({ process: process._id }, session);
+            const processD = await procesesDB.deleteOne(parameter, session);
+            await session.commitTransaction();
+            return res.status(200).json({ processD, statesD, filesD });
+        } catch (error) {
+            console.log(error);
+            await session.abortTransaction();
+            return res.status(500).json({ error: (error as Record<string, string>).message });
+        } finally {
+            session.endSession();
+        }
+    }
+}
+
+export default new ProcessesController();
