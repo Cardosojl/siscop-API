@@ -18,13 +18,3 @@ export const sessionDB: SessionOptions = {
     },
     rolling: true,
 };
-
-export function userSection(req: Request, res: Response, next: NextFunction) {
-    const user: Partial<IUser> = req.user || 0;
-    res.locals.user = user;
-    res.locals.name = user.name;
-    res.locals.level = user.level;
-    res.locals.id = user._id;
-    res.locals.pg = user.pg;
-    next();
-}

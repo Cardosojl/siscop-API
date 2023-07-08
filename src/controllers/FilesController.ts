@@ -8,12 +8,12 @@ class FilesController {
         try {
             const body = req.body as Partial<FileRequest>;
             const bodyValidation: Partial<FileRequest>[] = fileValidator(body);
-            if (bodyValidation.length > 0) return res.status(400).json({ error: bodyValidation });
+            if (bodyValidation.length > 0) return res.status(400).json({ errors: bodyValidation });
             const file: IFile = await filesDB.create(body);
             return res.status(201).json({ file });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -33,11 +33,11 @@ class FilesController {
                     : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
             });
             const file: IFile[] | null = await filesDB.findAll(parameter, select as string, include as string, sort as string, limit as number, page as number);
-            if (file?.length === 0) return res.status(404).json({ error: 'File não encontrado!' });
+            if (file?.length === 0) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
             return res.status(200).json({ file });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -50,15 +50,15 @@ class FilesController {
             const parameter: Partial<FileRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<FileRequest>[] = fileValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido' });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido' }] });
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const file: IFile | null = await filesDB.findOne(parameter, select as string, include as string);
-            if (!file) return res.status(404).json({ error: 'File não encontrado!' });
+            if (!file) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
             return res.status(200).json({ file });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -73,16 +73,16 @@ class FilesController {
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<FileRequest>[] = fileValidator(query);
             const bodyValidation: Partial<FileRequest>[] = fileValidator(body);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
-            if (queryValidation.length > 0 || bodyValidation.length > 0) return res.status(400).json({ error: queryValidation.concat(bodyValidation) });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido!' }] });
+            if (queryValidation.length > 0 || bodyValidation.length > 0) return res.status(400).json({ errors: queryValidation.concat(bodyValidation) });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const file: IFile | null = await filesDB.findOne(parameter, '-file');
-            if (!file) return res.status(404).json({ error: 'File não encontrado!' });
+            if (!file) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
             const fileU = await filesDB.updateOne(parameter, body);
             return res.status(200).json({ fileU });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -93,16 +93,16 @@ class FilesController {
             const parameter: Partial<FileRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<FileRequest>[] = fileValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido!' }] });
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const file: IFile | null = await filesDB.findOne(parameter);
-            if (!file) return res.status(404).json({ error: 'File não encontrado!' });
+            if (!file) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
             const fileD = await filesDB.deleteOne(parameter);
             return res.status(200).json({ fileD });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 }

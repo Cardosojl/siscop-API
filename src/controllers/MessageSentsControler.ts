@@ -18,7 +18,7 @@ class MessageSentsController {
                     ? (parameter[element] = `${query[element]}`)
                     : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
             });
-            const messages: IMessageSent[] | null = await messageSentsDB.findAll(
+            const response: IMessageSent[] | null = await messageSentsDB.findAll(
                 parameter,
                 select as string,
                 include as string,
@@ -26,11 +26,11 @@ class MessageSentsController {
                 limit as number,
                 page as number
             );
-            if (messages?.length === 0) return res.status(404).json({ error: 'Message não encontrada' });
-            return res.status(200).json({ messages });
+            if (response?.length === 0) return res.status(404).json({ errors: [{ message: 'Message não encontrada' }] });
+            return res.status(200).json({ response });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -42,15 +42,15 @@ class MessageSentsController {
             const parameter: Partial<MessageRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<MessageRequest>[] = messageValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido!' }] });
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
-            const message: IMessageSent | null = await messageSentsDB.findOne(parameter, select as string, include as string);
-            if (!message) return res.status(404).json({ error: 'Message não encontrada!' });
-            return res.status(200).json({ message });
+            const response: IMessageSent | null = await messageSentsDB.findOne(parameter, select as string, include as string);
+            if (!response) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
+            return res.status(200).json({ response });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -61,16 +61,16 @@ class MessageSentsController {
             const parameter: Partial<MessageRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<MessageRequest>[] = messageValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido' });
-            if (queryValidation.length > 0) return res.status(400).json({ error: queryValidation });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido' }] });
+            if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const message: IMessageSent | null = await messageSentsDB.findOne(parameter);
-            if (!message) return res.status(404).json({ error: 'Message não encontrada!' });
+            if (!message) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
             const messageD = await messageSentsDB.deleteOne(parameter);
             return res.status(200).json({ messageD });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 }

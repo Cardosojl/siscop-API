@@ -1,12 +1,13 @@
 import express from 'express';
 import processStatesController from '../controllers/ProcessStatesController';
+import loginValidation from '../middlewares/loginValidation';
 
 const route = express.Router();
 
-route.get('/', processStatesController.index);
-route.get('/processState', processStatesController.show);
-route.post('/', processStatesController.store);
-route.put('/', processStatesController.store);
-route.delete('/', processStatesController.delete);
+route.get('/', loginValidation, processStatesController.index);
+route.get('/processState', loginValidation, processStatesController.show);
+route.post('/', loginValidation, processStatesController.store);
+route.put('/', loginValidation, processStatesController.store);
+route.delete('/', loginValidation, processStatesController.delete);
 
 export default route;

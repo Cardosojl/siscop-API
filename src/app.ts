@@ -4,6 +4,7 @@ import cors from 'cors';
 import session from 'express-session';
 import passportConfig from './config/passportConfig';
 import { sessionDB } from './config/session';
+import corsOptions from './config/cors';
 import login from './routes/loginRoute';
 import years from './routes/yearsRoute';
 import users from './routes/usersRoute';
@@ -25,7 +26,7 @@ class App {
     }
 
     private middlewares(): void {
-        this.app.use(cors());
+        this.app.use(cors(corsOptions));
         this.app.use(express.json());
         this.app.use(session(sessionDB));
         this.app.use(passport.initialize());

@@ -5,6 +5,7 @@ export interface IMessageSent {
     _id?: string | Types.ObjectId;
     sender: string | Types.ObjectId | null;
     receiver: string | Types.ObjectId | null;
+    section_receiver: string | Types.ObjectId | null;
     process?: string | Types.ObjectId | null;
     title: string;
     process_title: string;
@@ -24,7 +25,11 @@ const messageSent = new Schema<IMessageSent>(
         receiver: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: 'user',
-            required: [true, 'Destinatário é um campo obrigatório!'],
+            index: true,
+        },
+        section_receiver: {
+            type: mongoose.SchemaTypes.ObjectId,
+            ref: 'section',
             index: true,
         },
         process: {

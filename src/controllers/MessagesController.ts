@@ -12,20 +12,23 @@ class MessagesController {
     async store(req: Request, res: Response): Promise<Response> {
         const session = await mongoose.startSession();
         try {
+            session.startTransaction();
             let body = req.body as Partial<MessageRequest>;
+            const date = Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date());
+            body = { ...body, date: date };
             const bodyValidation: Partial<MessageRequest>[] = messageValidator(body);
             if (bodyValidation.length > 0) return res.status(400).json({ errors: bodyValidation });
             const sender: IUser | null = await usersdb.findOne({ _id: body.sender as string });
-            if (!sender) return res.status(404).json({ error: 'Sender Não encontrado!' });
+            if (!sender) return res.status(404).json({ errors: [{ message: 'Sender Não encontrado!' }] });
             if (body.process) {
                 const process: IProcess | null = await processesDB.findOne({ _id: body.process });
-                if (!process) return res.status(404).json({ error: 'Process não encontrado!' });
+                if (!process) return res.status(404).json({ errors: [{ message: 'Process não encontrado!' }] });
                 body = { ...body, process_title: process.title };
                 if (
                     (process.user !== null && `${sender._id}` !== `${process.user}`) ||
                     (process.user === null && `${sender._id}` !== `${process.receiver}` && `${sender.section}` !== `${process.section_receiver}`)
                 ) {
-                    return res.status(400).json({ error: 'Você não pode enviar este processo!' });
+                    return res.status(400).json({ errors: [{ message: 'Você não pode enviar este processo!' }] });
                 }
             } else {
                 body = { ...body, process_title: 'Sem Processo' };
@@ -36,11 +39,11 @@ class MessagesController {
             if (body.section_receiver) {
                 return await handleSectionReceiver(res, body, sender, session);
             }
-            return res.status(400).json({ error: 'É necessário um receiver ou uma section_receiver!' });
+            return res.status(400).json({ errors: [{ message: 'É necessário um receiver ou uma section_receiver!' }] });
         } catch (error) {
             console.log(error);
             await session.abortTransaction();
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         } finally {
             session.endSession();
         }
@@ -60,7 +63,7 @@ class MessagesController {
                     ? (parameter[element] = `${query[element]}`)
                     : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
             });
-            const messages: IMessage[] | null = await messagesDB.findAll(
+            const response: IMessage[] | null = await messagesDB.findAll(
                 parameter,
                 select as string,
                 include as string,
@@ -68,11 +71,11 @@ class MessagesController {
                 limit as number,
                 page as number
             );
-            if (messages?.length === 0) return res.status(404).json({ error: 'Message não encontrada' });
-            return res.status(200).json({ messages });
+            if (response?.length === 0) return res.status(404).json({ errors: [{ message: 'Message não encontrada' }] });
+            return res.status(200).json({ response });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -84,15 +87,15 @@ class MessagesController {
             const parameter: Partial<MessageRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<MessageRequest>[] = messageValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido!' }] });
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
-            const message: IMessage | null = await messagesDB.findOne(parameter, select as string, include as string);
-            if (!message) return res.status(404).json({ error: 'Message não encontrada!' });
-            return res.status(200).json({ message });
+            const response: IMessage | null = await messagesDB.findOne(parameter, select as string, include as string);
+            if (!response) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
+            return res.status(200).json({ response });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -103,25 +106,23 @@ class MessagesController {
             const parameter: Partial<MessageRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<MessageRequest>[] = messageValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido' });
-            if (queryValidation.length > 0) return res.status(400).json({ error: queryValidation });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido' }] });
+            if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const message: IMessage | null = await messagesDB.findOne(parameter);
-            if (!message) return res.status(404).json({ error: 'Message não encontrada!' });
+            if (!message) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
             const messageD = await messagesDB.deleteOne(parameter);
             return res.status(200).json({ messageD });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 }
 
-export default new MessagesController();
-
 async function handleReceiver(res: Response, body: Partial<MessageRequest>, sender: IUser, session: ClientSession): Promise<Response> {
     const receiver: IUser | null = await usersdb.findOne({ _id: body.receiver as string });
-    if (!receiver) return res.status(404).json({ error: 'Receiver não encontrado!' });
+    if (!receiver) return res.status(404).json({ errors: [{ message: 'Receiver não encontrado!' }] });
     const messageSent: IMessageSent = await messagesSentsDB.create(body, session);
     const message = await messagesDB.create(body, session);
     if (body.process) {
@@ -137,7 +138,7 @@ async function handleReceiver(res: Response, body: Partial<MessageRequest>, send
 async function handleSectionReceiver(res: Response, body: Partial<MessageRequest>, sender: IUser, session: ClientSession): Promise<Response> {
     session.startTransaction();
     const users: IUser[] | null = await usersdb.findAll({ section: body.section_receiver as string }, 'section', 'section');
-    if (users?.length === 0) return res.status(404).json({ error: 'Nenhum user cadastrado nesta section ou section inválida!' });
+    if (users?.length === 0) return res.status(404).json({ errors: [{ message: 'Nenhum user cadastrado nesta section ou section inválida!' }] });
     const messageSent: IMessageSent = await messagesSentsDB.create(body, session);
     for (const receiver of users as IUser[]) {
         await messagesDB.create({ ...body, receiver: receiver._id }, session);
@@ -157,3 +158,5 @@ async function handleSectionReceiver(res: Response, body: Partial<MessageRequest
         return res.status(201).json({ messageSent });
     }
 }
+
+export default new MessagesController();

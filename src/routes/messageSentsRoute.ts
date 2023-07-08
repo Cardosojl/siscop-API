@@ -1,10 +1,11 @@
 import express from 'express';
 import messageSentsControler from '../controllers/MessageSentsControler';
+import loginValidation from '../middlewares/loginValidation';
 
 const route = express.Router();
 
-route.get('/', messageSentsControler.index);
-route.get('/messageSent', messageSentsControler.show);
-route.delete('/', messageSentsControler.delete);
+route.get('/', loginValidation, messageSentsControler.index);
+route.get('/messageSent', loginValidation, messageSentsControler.show);
+route.delete('/', loginValidation, messageSentsControler.delete);
 
 export default route;

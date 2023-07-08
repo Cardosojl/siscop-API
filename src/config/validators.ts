@@ -14,7 +14,7 @@ export function yearValidator(request: Partial<YearRequest>): Record<string, str
 
     for (key in yearRegex) {
         if (request.hasOwnProperty(key)) {
-            if (!(yearRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ error: `Valor do Parâmetro ${key} é inválido!` });
+            if (!(yearRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ message: `Valor do Parâmetro ${key} é inválido!` });
         }
     }
     return errors;
@@ -34,7 +34,7 @@ export function sectionValidator(request: Partial<SectionRequest>): Record<strin
 
     for (key in sectionRegex) {
         if (request.hasOwnProperty(key)) {
-            if (!(sectionRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ error: `Valor do Parâmetro ${key} é inválido!` });
+            if (!(sectionRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ message: `Valor do Parâmetro ${key} é inválido!` });
         }
     }
     return errors;
@@ -58,7 +58,7 @@ export function userValidator(request: Partial<UserRequest>): Record<string, str
 
     for (key in userRegex) {
         if (request.hasOwnProperty(key)) {
-            if (!(userRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ error: `Valor do Parâmetro ${key} é inválido!` });
+            if (!(userRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ message: `Valor do Parâmetro ${key} é inválido!` });
         }
     }
     return errors;
@@ -90,7 +90,7 @@ export function processValidator(request: Partial<ProcessRequest>): Record<strin
 
     for (key in processRegex) {
         if (request.hasOwnProperty(key)) {
-            if (!(processRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ error: `Valor do Parâmetro ${key} é inválido!` });
+            if (!(processRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ message: `Valor do Parâmetro ${key} é inválido!` });
         }
     }
     return errors;
@@ -115,7 +115,7 @@ export function processStateValidator(request: Partial<ProcessStateRequest>): Re
 
     for (key in processStateRegex) {
         if (request.hasOwnProperty(key)) {
-            if (!(processStateRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ error: `Valor do Parâmetro ${key} é inválido!` });
+            if (!(processStateRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ message: `Valor do Parâmetro ${key} é inválido!` });
         }
     }
     return errors;
@@ -146,7 +146,7 @@ export function messageValidator(request: Partial<MessageRequest>): Record<strin
 
     for (key in messageRegex) {
         if (request.hasOwnProperty(key)) {
-            if (!(messageRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ error: `Valor do Parâmetro ${key} é inválido!` });
+            if (!(messageRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ message: `Valor do Parâmetro ${key} é inválido!` });
         }
     }
     return errors;
@@ -171,7 +171,7 @@ export function fileValidator(request: Partial<FileRequest>): Record<string, str
 
     for (key in fileRegex) {
         if (request.hasOwnProperty(key)) {
-            if (!(fileRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ error: `Valor do Parâmetro ${key} é inválido!` });
+            if (!(fileRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ message: `Valor do Parâmetro ${key} é inválido!` });
         }
     }
     return errors;

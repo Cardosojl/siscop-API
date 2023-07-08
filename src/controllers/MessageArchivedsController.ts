@@ -9,17 +9,21 @@ class MessageArchivedsController {
     async store(req: Request, res: Response): Promise<Response> {
         const session = await mongoose.startSession();
         try {
-            const body = req.body as Partial<MessageRequest>;
+            let body = req.body as Partial<MessageRequest>;
+            const date = Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date());
+            body = { ...body, date: date };
             const bodyValidation: Partial<MessageRequest>[] = messageValidator(body);
             if (bodyValidation.length > 0) return res.status(400).json({ errors: bodyValidation });
             const message: IMessage | null = await messagesDB.findOne({ _id: body.message as string }, '-_id');
-            if (!message) return res.status(404).json({ error: 'Message não encontrada!' });
+            if (!message) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
             session.startTransaction();
             const archivedValues: Partial<MessageRequest> = {};
             messageArchivedsDB
                 .fields()
-                .filter((element) => element !== '_id')
+                .filter((element) => element !== '_id' && message[element as keyof IMessage])
                 .forEach((element) => (archivedValues[element] = `${message[element as keyof IMessage]}`));
+            console.log(message);
+            console.log(archivedValues);
             const archived: IMessageArchived = await messageArchivedsDB.create(archivedValues, session);
             await messagesDB.deleteOne({ _id: body.message } as Partial<IMessage>, session);
             await session.commitTransaction();
@@ -27,7 +31,7 @@ class MessageArchivedsController {
         } catch (error) {
             console.log(error);
             await session.abortTransaction();
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         } finally {
             session.endSession();
         }
@@ -47,7 +51,7 @@ class MessageArchivedsController {
                     ? (parameter[element] = `${query[element]}`)
                     : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
             });
-            const messages: IMessageArchived[] | null = await messageArchivedsDB.findAll(
+            const response: IMessageArchived[] | null = await messageArchivedsDB.findAll(
                 parameter,
                 select as string,
                 include as string,
@@ -55,11 +59,11 @@ class MessageArchivedsController {
                 limit as number,
                 page as number
             );
-            if (messages?.length === 0) return res.status(404).json({ error: 'Message não encontrada' });
-            return res.status(200).json({ messages });
+            if (response?.length === 0) return res.status(404).json({ errors: [{ message: 'Message não encontrada' }] });
+            return res.status(200).json({ response });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -71,15 +75,15 @@ class MessageArchivedsController {
             const parameter: Partial<MessageRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<MessageRequest>[] = messageValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido!' }] });
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
-            const message: IMessageArchived | null = await messageArchivedsDB.findOne(parameter, select as string, include as string);
-            if (!message) return res.status(404).json({ error: 'Message não encontrada!' });
-            return res.status(200).json({ message });
+            const response: IMessageArchived | null = await messageArchivedsDB.findOne(parameter, select as string, include as string);
+            if (!response) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
+            return res.status(200).json({ response });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -90,16 +94,16 @@ class MessageArchivedsController {
             const parameter: Partial<MessageRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<MessageRequest>[] = messageValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido' });
-            if (queryValidation.length > 0) return res.status(400).json({ error: queryValidation });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido' }] });
+            if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const message: IMessageArchived | null = await messageArchivedsDB.findOne(parameter);
-            if (!message) return res.status(404).json({ error: 'Message não encontrada!' });
+            if (!message) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
             const messageD = await messageArchivedsDB.deleteOne(parameter);
             return res.status(200).json({ messageD });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 }

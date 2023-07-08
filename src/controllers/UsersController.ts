@@ -10,14 +10,14 @@ class UsersController {
             const body = req.body as Partial<UserRequest>;
             const bodyValidation: Partial<UserRequest>[] = userValidator(body);
             if (bodyValidation.length > 0) return res.status(400).json({ errors: bodyValidation });
-            if (!body.section) return res.status(400).json({ error: 'Valor de section precisa ser informado!' });
+            if (!body.section) return res.status(400).json({ errors: [{ message: 'Valor de section precisa ser informado!' }] });
             const section: ISection | null = await sectionsDB.findOne({ _id: body.section } as Partial<SectionRequest>);
-            if (!section) return res.status(404).json({ error: 'Section não encontrada!' });
+            if (!section) return res.status(404).json({ errors: [{ message: 'Section não encontrada!' }] });
             const user: IUser = await usersDB.create(body);
             return res.status(201).json({ user });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -36,11 +36,11 @@ class UsersController {
                     : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
             });
             const user: IUser[] | null = await usersDB.findAll(parameter, select as string, include as string, limit as number, page as number);
-            if (user?.length === 0) return res.status(404).json({ error: 'User não encontrado!' });
+            if (user?.length === 0) return res.status(404).json({ errors: [{ message: 'User não encontrado!' }] });
             return res.status(200).json({ user });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -52,7 +52,7 @@ class UsersController {
             const parameter: Partial<UserRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<UserRequest>[] = userValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido!' }] });
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const user: IUser | null = await usersDB.findOne(parameter, select as string, include as string);
@@ -60,7 +60,7 @@ class UsersController {
             return res.status(200).json({ user });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -73,20 +73,20 @@ class UsersController {
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<UserRequest>[] = userValidator(query);
             const bodyValidation: Partial<UserRequest>[] = userValidator(body);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido!' }] });
             if (queryValidation.length > 0 || bodyValidation.length > 0) return res.status(400).json({ errors: queryValidation.concat(bodyValidation) });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const user: IUser | null = await usersDB.findOne(parameter);
-            if (!user) return res.status(404).json({ error: 'User não encontrado!' });
+            if (!user) return res.status(404).json({ errors: [{ message: 'User não encontrado!' }] });
             if (body.section) {
                 const section: ISection | null = await sectionsDB.findOne({ _id: body.section } as Partial<SectionRequest>);
-                if (!section) return res.status(404).json({ error: 'Section não encontrada!' });
+                if (!section) return res.status(404).json({ errors: [{ message: 'Section não encontrada!' }] });
             }
             const userU = await usersDB.updateOne(parameter, body);
             return res.status(200).json({ userU });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 
@@ -97,16 +97,16 @@ class UsersController {
             const parameter: Partial<UserRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<UserRequest>[] = userValidator(query);
-            if (param.length === 0) return res.status(400).json({ error: 'Parâmetro inválido!' });
+            if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido!' }] });
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const user: IUser | null = await usersDB.findOne(parameter);
-            if (!user) return res.status(404).json({ error: 'User não encontrado!' });
+            if (!user) return res.status(404).json({ errors: [{ message: 'User não encontrado!' }] });
             const userD = await usersDB.deleteOne(parameter);
             return res.status(200).json({ userD });
         } catch (error) {
             console.log(error);
-            return res.status(500).json({ error: (error as Record<string, string>).message });
+            return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
         }
     }
 }
