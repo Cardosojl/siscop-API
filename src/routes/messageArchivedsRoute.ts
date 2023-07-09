@@ -5,7 +5,7 @@ import loginValidation from '../middlewares/loginValidation';
 const route = express.Router();
 
 route.get('/', loginValidation, messageArchivedsController.index);
-route.get('/messageArchived', loginValidation, messageArchivedsController.show);
+route.get('/message', loginValidation, messageArchivedsController.show);
 route.post('/', loginValidation, messageArchivedsController.store);
 route.delete('/', loginValidation, messageArchivedsController.delete);
 

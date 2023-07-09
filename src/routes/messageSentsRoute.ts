@@ -5,7 +5,7 @@ import loginValidation from '../middlewares/loginValidation';
 const route = express.Router();
 
 route.get('/', loginValidation, messageSentsControler.index);
-route.get('/messageSent', loginValidation, messageSentsControler.show);
+route.get('/message', loginValidation, messageSentsControler.show);
 route.delete('/', loginValidation, messageSentsControler.delete);
 
 export default route;
