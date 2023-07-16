@@ -27,7 +27,7 @@ class MessageArchivedsController {
             const archived: IMessageArchived = await messageArchivedsDB.create(archivedValues, session);
             await messagesDB.deleteOne({ _id: body.message } as Partial<IMessage>, session);
             await session.commitTransaction();
-            return res.status(201).json({ archived });
+            return res.status(201).json({ response: archived });
         } catch (error) {
             console.log(error);
             await session.abortTransaction();
@@ -100,7 +100,7 @@ class MessageArchivedsController {
             const message: IMessageArchived | null = await messageArchivedsDB.findOne(parameter);
             if (!message) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
             const messageD = await messageArchivedsDB.deleteOne(parameter);
-            return res.status(200).json({ messageD });
+            return res.status(200).json({ response: messageD });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });

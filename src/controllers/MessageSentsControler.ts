@@ -67,7 +67,7 @@ class MessageSentsController {
             const message: IMessageSent | null = await messageSentsDB.findOne(parameter);
             if (!message) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
             const messageD = await messageSentsDB.deleteOne(parameter);
-            return res.status(200).json({ messageD });
+            return res.status(200).json({ response: messageD });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });

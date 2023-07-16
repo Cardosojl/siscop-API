@@ -10,7 +10,7 @@ class FilesController {
             const bodyValidation: Partial<FileRequest>[] = fileValidator(body);
             if (bodyValidation.length > 0) return res.status(400).json({ errors: bodyValidation });
             const file: IFile = await filesDB.create(body);
-            return res.status(201).json({ file });
+            return res.status(201).json({ response: file });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -34,7 +34,7 @@ class FilesController {
             });
             const file: IFile[] | null = await filesDB.findAll(parameter, select as string, include as string, sort as string, limit as number, page as number);
             if (file?.length === 0) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
-            return res.status(200).json({ file });
+            return res.status(200).json({ response: file });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -55,7 +55,7 @@ class FilesController {
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const file: IFile | null = await filesDB.findOne(parameter, select as string, include as string);
             if (!file) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
-            return res.status(200).json({ file });
+            return res.status(200).json({ response: file });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -79,7 +79,7 @@ class FilesController {
             const file: IFile | null = await filesDB.findOne(parameter, '-file');
             if (!file) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
             const fileU = await filesDB.updateOne(parameter, body);
-            return res.status(200).json({ fileU });
+            return res.status(200).json({ response: fileU });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -99,7 +99,7 @@ class FilesController {
             const file: IFile | null = await filesDB.findOne(parameter);
             if (!file) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
             const fileD = await filesDB.deleteOne(parameter);
-            return res.status(200).json({ fileD });
+            return res.status(200).json({ response: fileD });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });

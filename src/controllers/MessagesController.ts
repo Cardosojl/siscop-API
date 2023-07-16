@@ -112,7 +112,7 @@ class MessagesController {
             const message: IMessage | null = await messagesDB.findOne(parameter);
             if (!message) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
             const messageD = await messagesDB.deleteOne(parameter);
-            return res.status(200).json({ messageD });
+            return res.status(200).json({ response: messageD });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -128,10 +128,10 @@ async function handleReceiver(res: Response, body: Partial<MessageRequest>, send
     if (body.process) {
         const processState: IProcessState = await processStatesDB.createNewMessage({ _id: body.process as string }, sender, receiver, session);
         const processU = await processesDB.updateOne({ _id: body.process as string }, { user: null, receiver: receiver._id }, session);
-        return res.status(201).json({ message, messageSent, processU, processState });
+        return res.status(201).json({ response: { message, messageSent, processU, processState } });
     } else {
         await session.commitTransaction();
-        return res.status(201).json({ messageSent });
+        return res.status(201).json({ response: messageSent });
     }
 }
 
@@ -152,10 +152,10 @@ async function handleSectionReceiver(res: Response, body: Partial<MessageRequest
         );
         const processU = await processesDB.updateOne({ _id: body.process as string }, { user: undefined, section_receiver: body.section_receiver as string });
         await session.commitTransaction();
-        return res.status(201).json({ messageSent, processU, processState });
+        return res.status(201).json({ response: { messageSent, processU, processState } });
     } else {
         await session.commitTransaction();
-        return res.status(201).json({ messageSent });
+        return res.status(201).json({ response: messageSent });
     }
 }
 

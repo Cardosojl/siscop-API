@@ -10,7 +10,7 @@ class YearsController {
             const bodyValidation: Partial<YearRequest>[] = yearValidator(body);
             if (bodyValidation.length > 0) return res.status(400).json({ errors: bodyValidation });
             const year: IYear = await yearsDB.create(body);
-            return res.status(201).json({ year });
+            return res.status(201).json({ response: year });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -30,7 +30,7 @@ class YearsController {
             });
             const years: IYear[] | null = await yearsDB.findAll(parameter, select as string, sort as number | string, limit as number, page as number);
             if (years?.length === 0) return res.status(400).json({ errors: [{ message: 'Year não encontrado!' }] });
-            return res.status(200).json({ years });
+            return res.status(200).json({ response: years });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -50,9 +50,9 @@ class YearsController {
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const year: IYear | null = await yearsDB.findOne(parameter, select as string);
             if (!year) {
-                return res.status(404).json({ errors: [{ message: 'Year não encontrado!' }] });
+                return res.status(200).json({ errors: [{ message: 'Year não encontrado!' }] });
             }
-            return res.status(200).json({ year });
+            return res.status(200).json({ response: year });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -72,7 +72,7 @@ class YearsController {
             if (queryValidation.length > 0 || bodyValidation.length > 0) return res.status(400).json({ errors: queryValidation.concat(bodyValidation) });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const year: IYear | null = await yearsDB.findOne(parameter);
-            if (!year) return res.status(404).json({ errors: [{ message: 'Year não encontrado!' }] });
+            if (!year) return res.status(200).json({ errors: [{ message: 'Year não encontrado!' }] });
             const yearU = await yearsDB.updateOne(parameter, body);
             return res.status(200).json({ yearU });
         } catch (error) {
@@ -92,7 +92,7 @@ class YearsController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const year: IYear | null = await yearsDB.findOne(parameter);
-            if (!year) return res.status(404).json({ errors: [{ message: 'Year não encontrado!' }] });
+            if (!year) return res.status(200).json({ errors: [{ message: 'Year não encontrado!' }] });
             const yearD = await yearsDB.deleteOne(parameter);
             return res.status(200).json({ yearD });
         } catch (error) {

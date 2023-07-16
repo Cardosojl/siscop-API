@@ -34,7 +34,7 @@ class ProcessesController {
             };
             const state: IProcessState = await processStatesDB.create(newState, session);
             await session.commitTransaction();
-            return res.status(201).json({ process, state });
+            return res.status(201).json({ response: { process, state } });
         } catch (error) {
             console.log(error);
             await session.abortTransaction();
@@ -56,7 +56,7 @@ class ProcessesController {
             if (aggregate) {
                 param.forEach((element) => (parameter[element] = `${query[element]}`));
                 const processes = await procesesDB.aggregate(parameter, sort as string, limit as number, page as number, aggregate as string);
-                return res.status(200).json({ processes });
+                return res.status(200).json({ response: processes });
             }
             param.forEach((element) => {
                 element === '_id' || element === 'user' || element === 'receiver' || element === 'section_receiver' || element === 'origin'
@@ -72,7 +72,7 @@ class ProcessesController {
                 page as number
             );
             if (processes?.length === 0) return res.status(404).json({ errors: [{ message: 'Process não encontrado!' }] });
-            return res.status(200).json({ processes });
+            return res.status(200).json({ response: processes });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -92,7 +92,7 @@ class ProcessesController {
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const process: IProcess | null = await procesesDB.findOne(parameter, select as string, include as string);
             if (!process) return res.status(400).json({ error: 'Process não encontrado' });
-            return res.status(200).json({ process });
+            return res.status(200).json({ response: process });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -118,7 +118,7 @@ class ProcessesController {
                 if (!section) return res.status(404).json({ errors: [{ message: 'Section não encontrada!' }] });
             }
             const processU = await procesesDB.updateOne(parameter, body);
-            return res.status(200).json({ processU });
+            return res.status(200).json({ response: processU });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -143,7 +143,7 @@ class ProcessesController {
             const filesD = await filesDB.deleteMany({ process: process._id }, session);
             const processD = await procesesDB.deleteOne(parameter, session);
             await session.commitTransaction();
-            return res.status(200).json({ processD, statesD, filesD });
+            return res.status(200).json({ response: { processD, statesD, filesD } });
         } catch (error) {
             console.log(error);
             await session.abortTransaction();

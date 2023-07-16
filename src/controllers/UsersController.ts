@@ -14,7 +14,7 @@ class UsersController {
             const section: ISection | null = await sectionsDB.findOne({ _id: body.section } as Partial<SectionRequest>);
             if (!section) return res.status(404).json({ errors: [{ message: 'Section não encontrada!' }] });
             const user: IUser = await usersDB.create(body);
-            return res.status(201).json({ user });
+            return res.status(201).json({ response: user });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
@@ -37,7 +37,7 @@ class UsersController {
             });
             const user: IUser[] | null = await usersDB.findAll(parameter, select as string, include as string, limit as number, page as number);
             if (user?.length === 0) return res.status(404).json({ errors: [{ message: 'User não encontrado!' }] });
-            return res.status(200).json({ user });
+            return res.status(200).json({ response: user });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
