@@ -35,7 +35,7 @@ class ProcessStatesController {
             });
             // eslint-disable-next-line prettier/prettier
             const states: IProcessState[] | null = await processStatesDB.findAll(parameter, select as string, include as string, sort as string, limit as number, page as number);
-            if (states?.length === 0) return res.status(404).json({ errors: [{ message: 'ProcessState não encontrado!' }] });
+            if (states?.length === 0) return res.status(200).json({ response: null });
             return res.status(200).json({ response: states });
         } catch (error) {
             console.log(error);
@@ -55,7 +55,7 @@ class ProcessStatesController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const state: IProcessState | null = await processStatesDB.findOne(parameter, select as string, include as string);
-            if (!state) return res.status(400).json({ errors: [{ message: 'ProcessState não encontrado!' }] });
+            if (!state) return res.status(200).json({ response: null });
             return res.status(200).json({ response: state });
         } catch (error) {
             console.log(error);
@@ -76,7 +76,7 @@ class ProcessStatesController {
             if (queryValidation.length > 0 || bodyValidation.length > 0) return res.status(400).json({ errors: queryValidation.concat(bodyValidation) });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const state: IProcessState | null = await processStatesDB.findOne(parameter);
-            if (!state) return res.status(404).json({ errors: [{ message: 'ProcessState não encontrado!' }] });
+            if (!state) return res.status(200).json({ response: null });
             const stateU = await processStatesDB.updateOne(parameter, body);
             return res.status(200).json({ response: stateU });
         } catch (error) {
@@ -96,7 +96,7 @@ class ProcessStatesController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const state: IProcessState | null = await processStatesDB.findOne(parameter);
-            if (!state) return res.status(404).json({ errors: [{ message: 'ProcessState não encontrado!' }] });
+            if (!state) return res.status(200).json({ response: null });
             const stateD = await processStatesDB.deleteOne(parameter);
             return res.status(200).json({ response: stateD });
         } catch (error) {

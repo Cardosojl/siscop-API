@@ -33,7 +33,7 @@ class FilesController {
                     : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
             });
             const file: IFile[] | null = await filesDB.findAll(parameter, select as string, include as string, sort as string, limit as number, page as number);
-            if (file?.length === 0) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
+            if (file?.length === 0) return res.status(200).json({ response: null });
             return res.status(200).json({ response: file });
         } catch (error) {
             console.log(error);
@@ -54,7 +54,7 @@ class FilesController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const file: IFile | null = await filesDB.findOne(parameter, select as string, include as string);
-            if (!file) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
+            if (!file) return res.status(200).json({ response: null });
             return res.status(200).json({ response: file });
         } catch (error) {
             console.log(error);
@@ -77,7 +77,7 @@ class FilesController {
             if (queryValidation.length > 0 || bodyValidation.length > 0) return res.status(400).json({ errors: queryValidation.concat(bodyValidation) });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const file: IFile | null = await filesDB.findOne(parameter, '-file');
-            if (!file) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
+            if (!file) return res.status(200).json({ response: null });
             const fileU = await filesDB.updateOne(parameter, body);
             return res.status(200).json({ response: fileU });
         } catch (error) {
@@ -97,7 +97,7 @@ class FilesController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const file: IFile | null = await filesDB.findOne(parameter);
-            if (!file) return res.status(404).json({ errors: [{ message: 'File não encontrado!' }] });
+            if (!file) return res.status(200).json({ response: null });
             const fileD = await filesDB.deleteOne(parameter);
             return res.status(200).json({ response: fileD });
         } catch (error) {

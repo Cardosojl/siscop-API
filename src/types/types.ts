@@ -12,7 +12,7 @@ export type YearRequest = {
 export type SectionRequest = {
     _id: string | Types.ObjectId | RegExp;
     name: string | RegExp;
-    level: number | string | RegExp;
+    level: string | RegExp | Types.ObjectId;
     select: string | RegExp;
     limit: number | string | RegExp;
     page: number | string | RegExp;
@@ -74,6 +74,16 @@ export type FileRequest = {
     originalName: string | RegExp;
     process: string | Types.ObjectId | RegExp;
     message: string | Types.ObjectId | RegExp;
+    select: string | RegExp;
+    include: string | RegExp;
+    sort: number | string | RegExp;
+    limit: number | string | RegExp;
+    page: number | string | RegExp;
+};
+
+export type AcquisitionWayRequest = {
+    _id: string | Types.ObjectId | RegExp;
+    name: string | RegExp;
     select: string | RegExp;
     include: string | RegExp;
     sort: number | string | RegExp;

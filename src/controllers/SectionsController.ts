@@ -27,10 +27,10 @@ class SectionsController {
             const queryValidation: Partial<SectionRequest>[] = sectionValidator(query);
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => {
-                element === '_id' ? (parameter[element] = query[element]) : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
+                element === '_id' || element === 'level' ? (parameter[element] = query[element]) : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
             });
             const section: ISection[] | null = await sectionsDB.findAll(parameter, select as string, limit as number, page as number);
-            if (section?.length === 0) return res.status(404).json({ errors: [{ message: 'Section não encontrada!' }] });
+            if (section?.length === 0) return res.status(200).json({ response: null });
             return res.status(200).json({ response: section });
         } catch (error) {
             console.log(error);
@@ -50,7 +50,7 @@ class SectionsController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const section: ISection | null = await sectionsDB.findOne(parameter, select as string);
-            if (!section) return res.status(404).json({ errors: [{ message: 'Section não encontrada!' }] });
+            if (!section) return res.status(200).json({ response: null });
             return res.status(200).json({ response: section });
         } catch (error) {
             console.log(error);

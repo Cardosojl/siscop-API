@@ -71,7 +71,7 @@ class ProcessesController {
                 limit as number,
                 page as number
             );
-            if (processes?.length === 0) return res.status(404).json({ errors: [{ message: 'Process não encontrado!' }] });
+            if (processes?.length === 0) return res.status(200).json({ response: null });
             return res.status(200).json({ response: processes });
         } catch (error) {
             console.log(error);
@@ -91,7 +91,7 @@ class ProcessesController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const process: IProcess | null = await procesesDB.findOne(parameter, select as string, include as string);
-            if (!process) return res.status(400).json({ error: 'Process não encontrado' });
+            if (!process) return res.status(200).json({ response: null });
             return res.status(200).json({ response: process });
         } catch (error) {
             console.log(error);
@@ -112,10 +112,10 @@ class ProcessesController {
             if (queryValidation.length > 0 || bodyValidation.length > 0) return res.status(400).json({ errors: queryValidation.concat(bodyValidation) });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const process: IProcess | null = await procesesDB.findOne(parameter);
-            if (!process) return res.status(404).json({ errors: [{ message: 'Process não encontrado' }] });
+            if (!process) return res.status(200).json({ response: null });
             if (body.origin) {
                 const section: ISection | null = await sectionsDB.findOne({ _id: body.origin } as Partial<SectionRequest>);
-                if (!section) return res.status(404).json({ errors: [{ message: 'Section não encontrada!' }] });
+                if (!section) return res.status(200).json({ response: null });
             }
             const processU = await procesesDB.updateOne(parameter, body);
             return res.status(200).json({ response: processU });
@@ -137,7 +137,7 @@ class ProcessesController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const process: IProcess | null = await procesesDB.findOne(parameter);
-            if (!process) return res.status(404).json({ errors: [{ message: 'Process não encontrado!' }] });
+            if (!process) return res.status(200).json({ response: null });
             session.startTransaction();
             const statesD = await processStatesDB.deleteMany({ process: process._id }, session);
             const filesD = await filesDB.deleteMany({ process: process._id }, session);

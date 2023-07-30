@@ -1,4 +1,13 @@
-import { MessageRequest, YearRequest, SectionRequest, UserRequest, ProcessRequest, ProcessStateRequest, FileRequest } from '../types/types';
+import {
+    MessageRequest,
+    YearRequest,
+    SectionRequest,
+    UserRequest,
+    ProcessRequest,
+    ProcessStateRequest,
+    FileRequest,
+    AcquisitionWayRequest,
+} from '../types/types';
 
 export function yearValidator(request: Partial<YearRequest>): Record<string, string>[] {
     const errors: Record<string, string>[] = [];
@@ -162,6 +171,27 @@ export function fileValidator(request: Partial<FileRequest>): Record<string, str
         originalName: /^./s,
         process: /^[0-9a-fA-F]{24}$/,
         message: /^[0-9a-fA-F]{24}$/,
+        select: /^./s,
+        include: /^./s,
+        sort: /^(1|-1|asc|ASC|DESC|desc)$/,
+        page: /^\d+$/,
+        limit: /^\d+$/,
+    };
+
+    for (key in fileRegex) {
+        if (request.hasOwnProperty(key)) {
+            if (!(fileRegex[key] as RegExp).test(`${request[key]}`)) errors.push({ message: `Valor do Parâmetro ${key} é inválido!` });
+        }
+    }
+    return errors;
+}
+
+export function acquisitionWayValidator(request: Partial<AcquisitionWayRequest>): Record<string, string>[] {
+    const errors: Record<string, string>[] = [];
+    let key: keyof AcquisitionWayRequest;
+    const fileRegex: AcquisitionWayRequest = {
+        _id: /^[0-9a-fA-F]{24}$/,
+        name: /^./s,
         select: /^./s,
         include: /^./s,
         sort: /^(1|-1|asc|ASC|DESC|desc)$/,

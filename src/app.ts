@@ -15,6 +15,8 @@ import files from './routes/filesRoute';
 import messages from './routes/messagesRoute';
 import messageSents from './routes/messageSentsRoute';
 import messageArchiveds from './routes/messageArchivedsRoute';
+import acquisitionWays from './routes/acquisitionWaysRoute';
+import fileBuffer from './routes/fileBufferRoute';
 
 class App {
     app: Application;
@@ -44,6 +46,8 @@ class App {
         this.app.use('/messages', messages);
         this.app.use('/messageSents', messageSents);
         this.app.use('/messageArchiveds', messageArchiveds);
+        this.app.use('/acquisitionWays', acquisitionWays);
+        this.app.use('/fileBuffer', fileBuffer);
     }
 }
 

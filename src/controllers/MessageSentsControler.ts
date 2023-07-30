@@ -26,7 +26,7 @@ class MessageSentsController {
                 limit as number,
                 page as number
             );
-            if (response?.length === 0) return res.status(404).json({ errors: [{ message: 'Message não encontrada' }] });
+            if (response?.length === 0) return res.status(200).json({ response: null });
             return res.status(200).json({ response });
         } catch (error) {
             console.log(error);
@@ -46,7 +46,7 @@ class MessageSentsController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const response: IMessageSent | null = await messageSentsDB.findOne(parameter, select as string, include as string);
-            if (!response) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
+            if (!response) return res.status(200).json({ response: null });
             return res.status(200).json({ response });
         } catch (error) {
             console.log(error);
@@ -65,7 +65,7 @@ class MessageSentsController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const message: IMessageSent | null = await messageSentsDB.findOne(parameter);
-            if (!message) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
+            if (!message) return res.status(200).json({ response: null });
             const messageD = await messageSentsDB.deleteOne(parameter);
             return res.status(200).json({ response: messageD });
         } catch (error) {
