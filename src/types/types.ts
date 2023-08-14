@@ -59,6 +59,7 @@ export type ProcessStateRequest = {
     state: string | RegExp;
     anotation: string | RegExp;
     date: string | RegExp;
+    createdAt: string | RegExp;
     select: string | RegExp;
     include: string | RegExp;
     sort: number | string | RegExp;

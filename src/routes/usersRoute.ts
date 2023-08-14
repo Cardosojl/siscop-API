@@ -6,7 +6,7 @@ const route = express.Router();
 
 route.get('/', loginValidation, userController.index);
 route.get('/user', loginValidation, userController.show);
-route.post('/', loginValidation, userController.store);
+route.post('/', userController.store);
 route.put('/', loginValidation, userController.update);
 route.delete('/', loginValidation, userController.delete);
 

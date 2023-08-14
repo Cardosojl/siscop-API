@@ -1,5 +1,6 @@
-import mongoose, { ClientSession, Schema, SortOrder, Types, UpdateWriteOpResult, mongo } from 'mongoose';
+import mongoose, { Aggregate, ClientSession, Schema, SortOrder, Types, UpdateWriteOpResult, mongo } from 'mongoose';
 import { ProcessRequest } from '../types/types';
+import { IProcessState } from './ProcessStates';
 
 export interface IProcess {
     _id?: string | Types.ObjectId;
@@ -127,7 +128,7 @@ class Processes {
     async aggregate(parameter: Partial<ProcessRequest>, sort: string | number = -1, limit = 0, page = 0, aggregate: string) {
         try {
             const match = this.queryStringConversor(parameter);
-            const agg = processModel
+            const agg = await processModel
                 .aggregate()
                 .match(match)
                 .lookup({ from: aggregate, localField: '_id', foreignField: 'process', as: aggregate })

@@ -9,6 +9,7 @@ export interface IProcessState {
     state: string;
     anotation?: string;
     date: string | undefined;
+    createdAt?: string;
 }
 
 const processState = new Schema<IProcessState>(

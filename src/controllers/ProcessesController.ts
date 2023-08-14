@@ -6,7 +6,7 @@ import processStatesDB, { IProcessState } from '../models/ProcessStates';
 import yearsDB, { IYear } from '../models/Years';
 import filesDB from '../models/Files';
 import { Request, Response } from 'express';
-import { ProcessRequest, SectionRequest, YearRequest } from '../types/types';
+import { ProcessRequest, ProcessStateRequest, SectionRequest, YearRequest } from '../types/types';
 import { processValidator } from '../config/validators';
 
 class ProcessesController {
@@ -82,7 +82,7 @@ class ProcessesController {
     async show(req: Request, res: Response): Promise<Response> {
         try {
             const query = req.query as Partial<ProcessRequest>;
-            const { select, include } = query;
+            const { select, include, aggregate, sort } = query;
             const fields: (keyof IProcess)[] = procesesDB.fields();
             const parameter: Partial<ProcessRequest> = {};
             const param = fields.filter((element) => Object.keys(query).includes(element));
@@ -90,6 +90,28 @@ class ProcessesController {
             if (param.length === 0) return res.status(400).json({ errors: [{ message: 'Parâmetro inválido!' }] });
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
+            if (aggregate) {
+                param.forEach((element) => (parameter[element] = `${query[element]}`));
+                const process = await procesesDB.aggregate(parameter, sort as string, 1, 0, aggregate as string);
+                if (process[0][`${aggregate}`]) {
+                    let processStates = process[0][`${aggregate}`];
+                    const users = await processStates
+                        .sort((a: ProcessStateRequest, b: ProcessStateRequest) => {
+                            if (a.createdAt > b.createdAt) return -1;
+                            if (a.createdAt < b.createdAt) return 1;
+                        })
+                        .map(async (element: IProcessState) =>
+                            element.user ? ((element.user as Partial<IUser>) = (await usersDB.findOne({ _id: element.user })) || {}) : undefined
+                        );
+                    await Promise.all(users).then((data) => {
+                        processStates = { ...processStates, users: data };
+                        processStates = { ...process, processstates: processStates };
+                    });
+                    return res.status(200).json({ response: processStates[0] });
+                } else {
+                    return res.status(200).json({ response: process[0] });
+                }
+            }
             const process: IProcess | null = await procesesDB.findOne(parameter, select as string, include as string);
             if (!process) return res.status(200).json({ response: null });
             return res.status(200).json({ response: process });

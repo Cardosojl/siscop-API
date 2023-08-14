@@ -4,9 +4,9 @@ import loginValidation from '../middlewares/loginValidation';
 
 const route = express.Router();
 
-route.get('/', loginValidation, sectionsController.index);
+route.get('/', sectionsController.index);
 route.get('/section', loginValidation, sectionsController.show);
-route.post('/', loginValidation, sectionsController.store);
+route.post('/', sectionsController.store);
 route.put('/', loginValidation, sectionsController.update);
 route.delete('/', loginValidation, sectionsController.delete);
 

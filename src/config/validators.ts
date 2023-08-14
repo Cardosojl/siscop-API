@@ -34,7 +34,7 @@ export function sectionValidator(request: Partial<SectionRequest>): Record<strin
     let key: keyof SectionRequest;
     const sectionRegex: SectionRequest = {
         _id: /^[0-9a-fA-F]{24}$/,
-        name: /^[a-zA-Z0-9\s]+$/,
+        name: /^./s,
         level: /^\d+$/,
         select: /^./s,
         page: /^\d+$/,
@@ -115,6 +115,7 @@ export function processStateValidator(request: Partial<ProcessStateRequest>): Re
         state: /^./s,
         anotation: /^./s,
         date: /^./s,
+        createdAt: /^./s,
         select: /^./s,
         include: /^./s,
         sort: /^(1|-1|asc|ASC|DESC|desc)$/,
