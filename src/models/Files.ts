@@ -4,7 +4,7 @@ import { FileRequest } from '../types/types';
 export interface IFile {
     _id?: string | Types.ObjectId;
     file: Buffer;
-    originalName?: string;
+    originalname?: string;
     filename: string;
     extension: string;
     process?: string | Types.ObjectId;
@@ -55,12 +55,12 @@ class Files {
 
     async create(body: Partial<FileRequest>, session?: ClientSession): Promise<IFile> {
         try {
-            const name: string[] = this.encodingName(body.originalName as string);
+            const name: string[] = this.encodingName(body.originalname as string);
             body = {
                 ...body,
                 filename: name[0],
                 extension: name[1],
-                originalName: undefined,
+                originalname: undefined,
             };
             const file: IFile = await new fileModel(body).save({ session });
             return file;

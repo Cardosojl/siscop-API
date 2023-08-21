@@ -169,7 +169,7 @@ export function fileValidator(request: Partial<FileRequest>): Record<string, str
         _id: /^[0-9a-fA-F]{24}$/,
         filename: /^./s,
         extension: /^[a-zA-Z0-9]+$/,
-        originalName: /^./s,
+        originalname: /^./s,
         process: /^[0-9a-fA-F]{24}$/,
         message: /^[0-9a-fA-F]{24}$/,
         select: /^./s,

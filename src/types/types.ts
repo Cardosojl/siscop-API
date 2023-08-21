@@ -72,7 +72,7 @@ export type FileRequest = {
     file?: string | Buffer | RegExp;
     filename: string | RegExp;
     extension: string | RegExp;
-    originalName: string | RegExp;
+    originalname: string | RegExp;
     process: string | Types.ObjectId | RegExp;
     message: string | Types.ObjectId | RegExp;
     select: string | RegExp;
