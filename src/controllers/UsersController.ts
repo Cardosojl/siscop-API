@@ -36,7 +36,7 @@ class UsersController {
                     : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
             });
             const user: IUser[] | null = await usersDB.findAll(parameter, select as string, include as string, limit as number, page as number);
-            if (user?.length === 0) return res.status(404).json({ errors: [{ message: 'User não encontrado!' }] });
+            if (user?.length === 0) return res.status(200).json({ response: null });
             return res.status(200).json({ response: user });
         } catch (error) {
             console.log(error);
@@ -56,8 +56,8 @@ class UsersController {
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const user: IUser | null = await usersDB.findOne(parameter, select as string, include as string);
-            if (!user) return res.status(404).json({ error: 'User não encontrado!' });
-            return res.status(200).json({ user });
+            if (!user) return res.status(200).json({ response: null });
+            return res.status(200).json({ response: user });
         } catch (error) {
             console.log(error);
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });

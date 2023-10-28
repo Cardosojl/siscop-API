@@ -7,7 +7,7 @@ export default function passportConfig(passport: PassportStatic) {
     passport.use(
         new localStrategy({ usernameField: 'name', passwordField: 'password' }, async function (name: string, password, done) {
             try {
-                const user = await usersDB.findOne({ name }, '');
+                const user = await usersDB.findOne({ name }, '', 'section');
                 if (!user) {
                     return done(null, false, { message: 'Usuário não encontrado!' });
                 }

@@ -80,7 +80,7 @@ class Processes {
             else if (key === 'user' || key === 'receiver' || key === 'section_receiver' || key === 'origin' || key === '_id') {
                 convertedQueryString[key] = new Types.ObjectId(`${queryString[key]}`);
             } else {
-                convertedQueryString[key] = `${queryString[key]}`;
+                convertedQueryString[key] = queryString[key] as string | RegExp;
             }
         }
         return convertedQueryString;

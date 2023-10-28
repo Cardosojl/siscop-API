@@ -24,7 +24,7 @@ const message = new Schema<IMessage>(
         receiver: {
             type: mongoose.SchemaTypes.ObjectId,
             ref: 'user',
-            required: [true, 'DEstinatário é um campo obrigatório!'],
+            required: [true, 'Destinatário é um campo obrigatório!'],
             index: true,
         },
         process: {

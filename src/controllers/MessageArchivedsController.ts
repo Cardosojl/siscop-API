@@ -22,8 +22,6 @@ class MessageArchivedsController {
                 .fields()
                 .filter((element) => element !== '_id' && message[element as keyof IMessage])
                 .forEach((element) => (archivedValues[element] = `${message[element as keyof IMessage]}`));
-            console.log(message);
-            console.log(archivedValues);
             const archived: IMessageArchived = await messageArchivedsDB.create(archivedValues, session);
             await messagesDB.deleteOne({ _id: body.message } as Partial<IMessage>, session);
             await session.commitTransaction();

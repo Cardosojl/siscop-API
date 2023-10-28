@@ -53,16 +53,15 @@ class ProcessesController {
             const param = fields.filter((element) => Object.keys(query).includes(element));
             const queryValidation: Partial<ProcessRequest>[] = processValidator(query);
             if (queryValidation.length > 0) return res.status(400).json({ errors: queryValidation });
-            if (aggregate) {
-                param.forEach((element) => (parameter[element] = `${query[element]}`));
-                const processes = await procesesDB.aggregate(parameter, sort as string, limit as number, page as number, aggregate as string);
-                return res.status(200).json({ response: processes });
-            }
             param.forEach((element) => {
                 element === '_id' || element === 'user' || element === 'receiver' || element === 'section_receiver' || element === 'origin'
                     ? (parameter[element] = `${query[element]}`)
                     : (parameter[element] = new RegExp(`${query[element]}`, 'i'));
             });
+            if (aggregate) {
+                const processes = await procesesDB.aggregate(parameter, sort as string, limit as number, page as number, aggregate as string);
+                return res.status(200).json({ response: processes });
+            }
             const processes: IProcess[] | null = await procesesDB.findAll(
                 parameter,
                 select as string,

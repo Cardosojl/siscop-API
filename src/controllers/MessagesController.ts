@@ -128,6 +128,7 @@ async function handleReceiver(res: Response, body: Partial<MessageRequest>, send
     if (body.process) {
         const processState: IProcessState = await processStatesDB.createNewMessage({ _id: body.process as string }, sender, receiver, session);
         const processU = await processesDB.updateOne({ _id: body.process as string }, { user: null, receiver: receiver._id }, session);
+        await session.commitTransaction();
         return res.status(201).json({ response: { message, messageSent, processU, processState } });
     } else {
         await session.commitTransaction();
@@ -136,9 +137,8 @@ async function handleReceiver(res: Response, body: Partial<MessageRequest>, send
 }
 
 async function handleSectionReceiver(res: Response, body: Partial<MessageRequest>, sender: IUser, session: ClientSession): Promise<Response> {
-    session.startTransaction();
     const users: IUser[] | null = await usersdb.findAll({ section: body.section_receiver as string }, 'section', 'section');
-    if (users?.length === 0) return res.status(404).json({ errors: [{ message: 'Nenhum user cadastrado nesta section ou section inválida!' }] });
+    if (users?.length === 0) return res.status(404).json({ errors: [{ message: 'Nenhum usuário cadastrado nesta seção ou seção inválida!' }] });
     const messageSent: IMessageSent = await messagesSentsDB.create(body, session);
     for (const receiver of users as IUser[]) {
         await messagesDB.create({ ...body, receiver: receiver._id }, session);
@@ -150,7 +150,8 @@ async function handleSectionReceiver(res: Response, body: Partial<MessageRequest
             (users as IUser[])[0].section as Partial<IUser>,
             session
         );
-        const processU = await processesDB.updateOne({ _id: body.process as string }, { user: undefined, section_receiver: body.section_receiver as string });
+        // eslint-disable-next-line prettier/prettier
+        const processU = await processesDB.updateOne({ _id: body.process as string }, { user: undefined, section_receiver: body.section_receiver as string }, session);
         await session.commitTransaction();
         return res.status(201).json({ response: { messageSent, processU, processState } });
     } else {

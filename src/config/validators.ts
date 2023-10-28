@@ -55,7 +55,7 @@ export function userValidator(request: Partial<UserRequest>): Record<string, str
     const userRegex: UserRequest = {
         _id: /^[0-9a-fA-F]{24}$/,
         name: /^[a-zA-Z\s]+$/,
-        password: /^.{6,}$/,
+        password: /^./s,
         pg: /^./s,
         level: /^\d+$/,
         section: /^[0-9a-fA-F]{24}$/,
