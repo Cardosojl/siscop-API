@@ -92,6 +92,7 @@ where the data, necessary for the perfect functioning of that application, are k
 <img src="https://lh3.googleusercontent.com/pw/ADCreHcj0HiGxplew5v4dzR-OktE7ICM03MjAoahL4rS-M6WRH7iR6_uA7jvQ3Pf_s3tgToIeTp7hFwW2t58C2jP1aRsN-UVFXmYPNBYblLEF1pDegsDDUv7JT1OmbmC-dCILKabHsuKhehMDgirQuc3EQ=w1358-h701-s-no?authuser=1" width="400px" />
 <img src="https://lh3.googleusercontent.com/pw/ADCreHfLNJ_C6FX82YpayTUS1dmRcxCCJZFWcuohh576_zJVu3n8s-o1WyU6_FRB2Eafk-Q87tIEJhmLuAz3TgW0D5F7hHMHywrXmbEShTmrKw4BS1wAT5Y8B1LaHgdFZSolwgG6sURCupxBbLi5ZDpfPQ=w1358-h701-s-no?authuser=1" width="400px" />  
 </div>
+<div style="display: inline">
 <img src="https://lh3.googleusercontent.com/pw/ADCreHd6cGQwCtaFbnGcnFgEP5jsT_3PsL7cWFYJhfCxVEfDzvRCYjQNvkR9fDA6ZFOJ67Ukg9jG9GeEaeALO319EUO3REiUXRUsfLzLCz6H4Ykb8hzDQ92sMSmDKUifcFQnK-2lcm-suQN4LNh7aCB0VA=w1358-h701-s-no?authuser=1" width="400px" />
 <img src="https://lh3.googleusercontent.com/pw/ADCreHeL9lyvNOoKQCrdqediWdXdxc4LSwpzj-dZsZymTDC9AHX3LfxUB_6PQxB9EU3gcERM3iFoslkYcrA4thncqKPvXF3e0De4Ic3vWHVBkbImkvC3tXVLM4mER7yDM444tdkllPh6AbtCAIi311zzhQ=w1358-h701-s-no?authuser=1" width="400px" />  
 </div>
