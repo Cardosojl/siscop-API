@@ -35,3 +35,51 @@ where the data, necessary for the perfect functioning of that application, are k
 3. dbURI= (mongodb uri) ex: `mongodb://username:password@host:port/database?options`
 4. SECRET= (session secret)
 5. ORIGIN= (origins that will be allowed in cors. They need to be separated by commas ',')
+
+### Initiate DataBase with initial values
+ ```bash
+ npm run dbInit
+ ```
+## How to Use
+### Run the application
+  ```bash
+  npm start
+  ```
+### Login
++ To be able to make requests, you must log in. Login is by accessing the URL `HOST:PORT/login` and in the body of the request it is necessary to pass the parameters `"name": "ADM"` `"password": "123456"`
+  
+### Collections
+
+  + **Login**  -  Used to log in (necessary to use the application)
+  
+  + **Users**  -  Manage application users
+  
+  + **Processes**  -  Manage application process
+  
+  + **Process States**  -  Manage processes states
+  
+  + **Sections**  -  Manage the sections present in the Entity/Company
+  
+  + **Years**  -  Manage processes years
+  
+  + **Acquisition Ways**  -  Manage the kind of processes
+  
+  + **Messages**  -  Manage received messages
+  
+  + **Messages Sent**  -  Manage Sent messages
+  
+  + **Messages Archived**  -  Manage Archived messages
+  
+  + **Files**  -  Manage processes files
+  
+### To make requests use
+
+  1. **Index** - Displays all collection elements:  ***GET*** `HOST:PORT/users`
+     
+  2. **Show** - Displays only one element from the collection (It is necessary to use some search filter): ***GET*** `HOST:PORT/users/user?name=ADM`
+     
+  3. **Store** - Saves an element within the collection (It is necessary send the body request): ***POST*** `HOST:PORT/users`
+     
+  4. **Update** - Update a collection element (It is necessary send the body request and a search filter): ***PUT*** `HOST:PORT/users?name=ADM`
+     
+  5. **Delete** - Delete an element from the collection (It is necessary to use some search filter): ***DELETE*** `HOST:PORT/users?name=ADM`
