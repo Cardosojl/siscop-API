@@ -83,3 +83,8 @@ where the data, necessary for the perfect functioning of that application, are k
   4. **Update** - Update a collection element (It is necessary send the body request and a search filter): ***PUT*** `HOST:PORT/users?name=ADM`
      
   5. **Delete** - Delete an element from the collection (It is necessary to use some search filter): ***DELETE*** `HOST:PORT/users?name=ADM`
+
+<div style="display: inline">
+<img src="https://lh3.googleusercontent.com/pw/ADCreHfSxs70Y9oqZy0HMoACmCdQnhNy4X1xGE08s5bdHXRZNQQPj3XUO8EJfDuPlOrl7Mbv3c2v47jPDH5Kdhu1ObDtAtQHuQIKdq2QZEwx4eG4ApxVBTcKpZfP7FyPjAUDUAZeNsk8BwLppczSps0SLg=w1358-h701-s-no?authuser=1" width="400px" />
+<img src="https://lh3.googleusercontent.com/pw/ADCreHc8Ord5eg8AH7s9MHqpS2xzmT22Vu80N_ptVQC-BqhX1eazkWKA0oAtIFYKTfVq_sPB0fIi6EVBCQTwYOYK21Me142olKdd0CnVvN-6RdY73xJd59WB-W_V8SA2aR_0D-BQNFsOR4ydOw4uj5YN-Q=w1358-h701-s-no?authuser=1" width="400px" />  
+</div>
