@@ -26,7 +26,7 @@ async function processCreate(): Promise<void> {
         const newState = {
             process: process._id as string,
             state: 'Processo Cadastrado',
-            anotation: `Processo Cadastrado Por ${user?.pg} ${user?.name}`,
+            anotation: `Processo Cadastrado Por ${user?.name}`,
             date: date,
         };
         await statesDB.create(newState, session);

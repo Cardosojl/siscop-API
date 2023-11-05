@@ -7,7 +7,6 @@ async function userCreate(): Promise<void> {
     const user: Partial<UserRequest> = {
         name: 'ADM',
         password: '123456',
-        pg: '',
         section: admSection?._id as string,
         level: 10,
     };

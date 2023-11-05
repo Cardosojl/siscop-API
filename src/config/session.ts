@@ -1,8 +1,6 @@
 import 'dotenv/config';
 import MongoConnect from 'connect-mongo';
 import session, { SessionOptions } from 'express-session';
-import { NextFunction, Request, Response } from 'express';
-import { IUser } from '../models/Users';
 
 const secret: string = process.env.SECRET as string;
 const dburi: string = process.env.dbURI as string;

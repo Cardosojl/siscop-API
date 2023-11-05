@@ -6,7 +6,6 @@ export interface IUser {
     _id?: string | Types.ObjectId;
     name: string;
     password: string;
-    pg: string;
     section: string | Types.ObjectId;
     level: number;
 }
@@ -37,9 +36,6 @@ const user = new Schema<IUser>({
         type: String,
         required: [true, 'Senha é um campo obrigatório'],
     },
-    pg: {
-        type: String,
-    },
     section: {
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'section',
@@ -59,7 +55,6 @@ class Users {
             const user: IUser = await new userModel({
                 name: body.name,
                 password: await bcrypt.hash(body.password as string, 10),
-                pg: body.pg,
                 section: body.section,
                 level: body.level,
             }).save();

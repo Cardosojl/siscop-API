@@ -67,7 +67,7 @@ class ProcessStates {
             const newState: IProcessState = {
                 process: process._id as string,
                 state: 'Em Transferência',
-                anotation: `De ${sender.pg} ${sender.name} para ${receiver.pg ? `${receiver.pg} ${receiver.name}` : receiver.name}`,
+                anotation: `De ${sender.name} para ${receiver.name}`,
                 date: undefined,
             };
             const processState = await new processStateModel(newState).save({ session });
