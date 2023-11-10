@@ -29,7 +29,7 @@ class ProcessesController {
             const newState: IProcessState = {
                 process: process._id as string,
                 state: 'Processo Cadastrado',
-                anotation: `Processo Cadastrado Por ${user.pg} ${user.name}`,
+                anotation: `Processo Cadastrado Por ${user.name}`,
                 date: date,
             };
             const state: IProcessState = await processStatesDB.create(newState, session);
