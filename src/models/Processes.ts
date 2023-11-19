@@ -86,7 +86,7 @@ class Processes {
         return convertedQueryString;
     }
 
-    async create(body: Partial<ProcessRequest>, session: ClientSession): Promise<IProcess> {
+    async create(body: Partial<ProcessRequest>, session?: ClientSession): Promise<IProcess> {
         try {
             const newProcess = {
                 ...body,

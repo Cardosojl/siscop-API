@@ -1,10 +1,7 @@
 import express, { Application } from 'express';
-import passport from 'passport';
 import cors from 'cors';
-import session from 'express-session';
-import passportConfig from './config/passportConfig';
-import { sessionDB } from './config/session';
 import corsOptions from './config/cors';
+import token from './routes/tokenRoute';
 import login from './routes/loginRoute';
 import years from './routes/yearsRoute';
 import users from './routes/usersRoute';
@@ -22,7 +19,6 @@ class App {
     app: Application;
     constructor() {
         this.app = express();
-        passportConfig(passport);
         this.middlewares();
         this.routes();
     }
@@ -30,13 +26,11 @@ class App {
     private middlewares(): void {
         this.app.use(cors(corsOptions));
         this.app.use(express.json());
-        this.app.use(session(sessionDB));
-        this.app.use(passport.initialize());
-        this.app.use(passport.session());
     }
 
     private routes(): void {
         this.app.use('/', login);
+        this.app.use('/token', token);
         this.app.use('/years', years);
         this.app.use('/users', users);
         this.app.use('/sections', sections);
