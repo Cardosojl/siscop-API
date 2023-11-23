@@ -4,6 +4,6 @@ import loginValidation from '../middlewares/loginValidation';
 
 const route = express.Router();
 
-route.get('/', FileBufferController.show);
+route.get('/', loginValidation, FileBufferController.show);
 
 export default route;

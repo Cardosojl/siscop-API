@@ -1,9 +1,14 @@
 import { Request, Response } from 'express';
-import messagesDB, { IMessage } from '../models/Messages';
-import messagesSentsDB, { IMessageSent } from '../models/MessagesSents';
-import usersdb, { IUser } from '../models/Users';
-import processesDB, { IProcess } from '../models/Processes';
-import processStatesDB, { IProcessState } from '../models/ProcessStates';
+import { IMessage } from '../models/schemas/messageSchema';
+import messagesDB from '../models/Messages';
+import { IMessageSent } from '../models/schemas/messageSentSchema';
+import messagesSentsDB from '../models/MessageSents';
+import { IUser } from '../models/schemas/userSchema';
+import usersDB from '../models/Users';
+import { IProcess } from '../models/schemas/processSchema';
+import processesDB from '../models/Processes';
+import { IProcessState } from '../models/schemas/processStateSchema';
+import processStatesDB from '../models/ProcessStates';
 import { MessageRequest } from '../types/types';
 import { messageValidator } from '../config/validators';
 import mongoose, { ClientSession } from 'mongoose';
@@ -18,7 +23,7 @@ class MessagesController {
             body = { ...body, date: date };
             const bodyValidation: Partial<MessageRequest>[] = messageValidator(body);
             if (bodyValidation.length > 0) return res.status(400).json({ errors: bodyValidation });
-            const sender: IUser | null = await usersdb.findOne({ _id: body.sender as string });
+            const sender: IUser | null = await usersDB.findOne({ _id: body.sender as string });
             if (!sender) return res.status(404).json({ errors: [{ message: 'Sender Não encontrado!' }] });
             if (body.process) {
                 const process: IProcess | null = await processesDB.findOne({ _id: body.process });
@@ -121,7 +126,7 @@ class MessagesController {
 }
 
 async function handleReceiver(res: Response, body: Partial<MessageRequest>, sender: IUser, session: ClientSession): Promise<Response> {
-    const receiver: IUser | null = await usersdb.findOne({ _id: body.receiver as string });
+    const receiver: IUser | null = await usersDB.findOne({ _id: body.receiver as string });
     if (!receiver) return res.status(404).json({ errors: [{ message: 'Receiver não encontrado!' }] });
     const messageSent: IMessageSent = await messagesSentsDB.create(body, session);
     const message = await messagesDB.create(body, session);
@@ -137,7 +142,7 @@ async function handleReceiver(res: Response, body: Partial<MessageRequest>, send
 }
 
 async function handleSectionReceiver(res: Response, body: Partial<MessageRequest>, sender: IUser, session: ClientSession): Promise<Response> {
-    const users: IUser[] | null = await usersdb.findAll({ section: body.section_receiver as string }, 'section', 'section');
+    const users: IUser[] | null = await usersDB.findAll({ section: body.section_receiver as string }, 'section', 'section');
     if (users?.length === 0) return res.status(404).json({ errors: [{ message: 'Nenhum usuário cadastrado nesta seção ou seção inválida!' }] });
     const messageSent: IMessageSent = await messagesSentsDB.create(body, session);
     for (const receiver of users as IUser[]) {

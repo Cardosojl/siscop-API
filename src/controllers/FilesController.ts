@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import filesDB, { IFile } from '../models/Files';
+import { IFile } from '../models/schemas/fileSchema';
+import filesDB from '../models/Files';
 import { FileRequest } from '../types/types';
 import { fileValidator } from '../config/validators';
 

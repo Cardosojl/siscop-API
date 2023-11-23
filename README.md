@@ -33,12 +33,12 @@ where the data, necessary for the perfect functioning of that application, are k
 1. PORT= (port value the API will run on)
 2. HOST= (api host)
 3. dbURI= (mongodb uri) ex: `mongodb://username:password@host:port/database?options`
-4. SECRET= (session secret)
+4. TOKEN_SECRET= (session secret)
 5. ORIGIN= (origins that will be allowed in cors. They need to be separated by commas ',')
 
 ### Initiate DataBase with initial values
  ```bash
- npm run dbInit
+ npm run migrate up
  ```
 ## How to Use
 ### Run the application

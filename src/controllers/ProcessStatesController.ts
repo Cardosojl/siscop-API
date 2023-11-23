@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import processStatesDB, { IProcessState } from '../models/ProcessStates';
+import { IProcessState } from '../models/schemas/processStateSchema';
+import processStatesDB from '../models/ProcessStates';
 import { ProcessStateRequest } from '../types/types';
 import { processStateValidator } from '../config/validators';
 

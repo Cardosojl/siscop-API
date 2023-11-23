@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { YearRequest } from '../types/types';
-import yearsDB, { IYear } from '../models/Years';
+import { IYear } from '../models/schemas/yearSchema';
+import yearsDB from '../models/Years';
 import { yearValidator } from '../config/validators';
 
 class YearsController {

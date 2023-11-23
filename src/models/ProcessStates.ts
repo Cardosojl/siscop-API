@@ -1,46 +1,9 @@
-import mongoose, { ClientSession, Schema, SortOrder, Types, UpdateWriteOpResult, mongo } from 'mongoose';
-import { IUser } from './Users';
+import mongoose, { ClientSession, SortOrder, UpdateWriteOpResult, mongo } from 'mongoose';
+import { IUser } from './schemas/userSchema';
 import { ProcessStateRequest } from '../types/types';
+import { IProcessState, processStateSchema } from './schemas/processStateSchema';
 
-export interface IProcessState {
-    _id?: string | Types.ObjectId;
-    process: string | Types.ObjectId;
-    user?: string | Types.ObjectId;
-    state: string;
-    anotation?: string;
-    date: string | undefined;
-    createdAt?: string;
-}
-
-const processState = new Schema<IProcessState>(
-    {
-        process: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'process',
-            required: [true, 'Process é um campo obrigatório!'],
-            index: true,
-        },
-        user: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'user',
-        },
-        state: {
-            type: String,
-            required: [true, 'State é um campo obrigatório!'],
-        },
-        anotation: {
-            type: String,
-        },
-        date: {
-            type: String,
-            default: Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date()),
-            required: [true, 'Date é um campo obrigatório!'],
-        },
-    },
-    { timestamps: true }
-);
-
-const processStateModel = mongoose.model<IProcessState>('processstate', processState);
+const processStateModel = mongoose.model<IProcessState>('processstate', processStateSchema);
 
 class ProcessStates {
     async create(body: Partial<ProcessStateRequest>, session?: ClientSession): Promise<IProcessState> {

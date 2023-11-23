@@ -1,60 +1,8 @@
-import mongoose, { ClientSession, Schema, SortOrder, Types, UpdateWriteOpResult, mongo } from 'mongoose';
+import mongoose, { ClientSession, SortOrder, UpdateWriteOpResult, mongo } from 'mongoose';
 import { MessageRequest } from '../types/types';
+import { IMessage, messageSchema } from './schemas/messageSchema';
 
-export interface IMessage {
-    _id?: string | Types.ObjectId;
-    sender: string | Types.ObjectId | null;
-    receiver: string | Types.ObjectId | null;
-    process?: string | Types.ObjectId | null;
-    title: string;
-    process_title: string;
-    content: string;
-    date: string;
-    visualized: boolean;
-}
-
-const message = new Schema<IMessage>(
-    {
-        sender: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'user',
-            required: [true, 'Remetente é um campo obrigatório!'],
-            index: true,
-        },
-        receiver: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'user',
-            required: [true, 'Destinatário é um campo obrigatório!'],
-            index: true,
-        },
-        process: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'process',
-        },
-        title: {
-            type: String,
-            required: [true, 'Título um campo obrigatório!'],
-        },
-        process_title: {
-            type: String,
-        },
-        content: {
-            type: String,
-        },
-        date: {
-            type: String,
-            default: Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date()),
-            required: [true, 'Data é um campo obrigatório!'],
-        },
-        visualized: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    { timestamps: true }
-);
-
-const messageModel = mongoose.model<IMessage>('message', message);
+const messageModel = mongoose.model<IMessage>('message', messageSchema);
 
 class Messages {
     async create(body: Partial<MessageRequest>, session?: ClientSession): Promise<IMessage> {

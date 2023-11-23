@@ -1,4 +1,5 @@
-import sectionsDB, { ISection } from '../models/Sections';
+import { ISection } from '../models/schemas/sectionSchema';
+import sectionsDB from '../models/Sections';
 import { sectionValidator } from '../config/validators';
 import { Request, Response } from 'express';
 import { SectionRequest } from '../types/types';

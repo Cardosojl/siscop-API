@@ -1,6 +1,7 @@
-import passport, { AuthenticateCallback } from 'passport';
+import passport from 'passport';
 import { Request, Response } from 'express';
-import usersDB, { IUser } from '../models/Users';
+import { IUser } from '../models/schemas/userSchema';
+import usersDB from '../models/Users';
 import { UserRequest } from '../types/types';
 import { userValidator } from '../config/validators';
 

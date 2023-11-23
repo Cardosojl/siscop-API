@@ -1,19 +1,8 @@
-import mongoose, { Schema, Types, UpdateWriteOpResult, mongo } from 'mongoose';
+import mongoose, { UpdateWriteOpResult, mongo } from 'mongoose';
 import { AcquisitionWayRequest } from '../types/types';
+import { IAcquisitionWay, acquisitionWaySchema } from './schemas/acquisitionWaySchema';
 
-export interface IAcquisitionWay {
-    _id?: string | Types.ObjectId;
-    name: string;
-}
-
-const acquisitionWay = new Schema<IAcquisitionWay>({
-    name: {
-        type: String,
-        required: [true, 'name é um campo obrigatório!'],
-    },
-});
-
-const AcquisitionWayModel = mongoose.model<IAcquisitionWay>('acquisitionway', acquisitionWay);
+const AcquisitionWayModel = mongoose.model<IAcquisitionWay>('acquisitionway', acquisitionWaySchema);
 
 class AcquisitionWays {
     async create(body: Partial<AcquisitionWayRequest>): Promise<IAcquisitionWay> {

@@ -14,10 +14,10 @@ class TokenController {
             }
             const match = bcrypt.compareSync(password, user.password);
             if (!match) {
-                return res.status(400).json({ errors: [{ message: 'Usuário não encontrado!' }] });
+                return res.status(400).json({ errors: [{ message: 'Senha inválida!' }] });
             }
             const token = jwt.sign({ id: user._id, name: user.name }, process.env.TOKEN_SECRET as string, {
-                expiresIn: process.env.TOKEN_EXPIRATION,
+                expiresIn: '1h',
             });
             return res.json({ token });
         } catch (error) {

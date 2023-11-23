@@ -1,23 +1,8 @@
-import mongoose, { ClientSession, Schema, SortOrder, Types, UpdateWriteOpResult, mongo } from 'mongoose';
+import mongoose, { ClientSession, SortOrder, UpdateWriteOpResult, mongo } from 'mongoose';
 import { YearRequest } from '../types/types';
+import { IYear, yearSchema } from './schemas/yearSchema';
 
-export interface IYear {
-    _id?: string | Types.ObjectId;
-    year: string;
-}
-
-const year = new Schema<IYear>(
-    {
-        year: {
-            type: String,
-            required: [true, 'Year é um campo obrigatório'],
-            unique: true,
-        },
-    },
-    { timestamps: true }
-);
-
-const yearModel = mongoose.model<IYear>('year', year);
+const yearModel = mongoose.model<IYear>('year', yearSchema);
 
 class Years {
     async create(body: Partial<YearRequest>, session?: ClientSession): Promise<IYear> {

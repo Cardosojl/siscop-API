@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import messageSentsDB, { IMessageSent } from '../models/MessagesSents';
+import { IMessageSent } from '../models/schemas/messageSentSchema';
+import messageSentsDB from '../models/MessageSents';
 import { MessageRequest } from '../types/types';
 import { messageValidator } from '../config/validators';
 

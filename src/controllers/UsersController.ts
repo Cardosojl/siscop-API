@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import usersDB, { IUser } from '../models/Users';
-import sectionsDB, { ISection } from '../models/Sections';
+import { IUser } from '../models/schemas/userSchema';
+import usersDB from '../models/Users';
+import { ISection } from '../models/schemas/sectionSchema';
+import sectionsDB from '../models/Sections';
 import { SectionRequest, UserRequest } from '../types/types';
 import { userValidator } from '../config/validators';
 

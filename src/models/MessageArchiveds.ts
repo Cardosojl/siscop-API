@@ -1,65 +1,7 @@
-import mongoose, { ClientSession, Schema, SortOrder, Types, UpdateWriteOpResult, mongo } from 'mongoose';
+import mongoose, { ClientSession, SortOrder, UpdateWriteOpResult, mongo } from 'mongoose';
+import { IMessageArchived, messageArchivedSchema } from './schemas/messageArchivedSchema';
 
-export interface IMessageArchived {
-    _id?: string | Types.ObjectId | null | RegExp;
-    sender: string | Types.ObjectId | null | RegExp;
-    receiver: string | Types.ObjectId | null | RegExp;
-    process?: string | Types.ObjectId | null | RegExp;
-    title: string | RegExp;
-    process_title: string | RegExp;
-    content: string | RegExp;
-    date: string | RegExp;
-    visualized: boolean | string | RegExp;
-    message?: string | Types.ObjectId | null | RegExp;
-    select?: string | RegExp;
-    include?: string | RegExp;
-    sort?: string | number | RegExp;
-    limit?: number | string | RegExp;
-    page?: number | string | RegExp;
-}
-
-const messageArchived = new Schema<IMessageArchived>(
-    {
-        sender: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'user',
-            required: [true, 'Remetente é um campo obrigatório!'],
-            index: true,
-        },
-        receiver: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'user',
-            required: [true, 'Destinatário é um campo obrigatório!'],
-            index: true,
-        },
-        process: {
-            type: mongoose.SchemaTypes.ObjectId,
-            ref: 'process',
-        },
-        title: {
-            type: String,
-            required: [true, 'Título um campo obrigatório!'],
-        },
-        process_title: {
-            type: String,
-        },
-        content: {
-            type: String,
-        },
-        date: {
-            type: String,
-            default: Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date()),
-            required: [true, 'Data é um campo obrigatório!'],
-        },
-        visualized: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    { timestamps: true }
-);
-
-const messageArchivedModel = mongoose.model<IMessageArchived>('messagearchived', messageArchived);
+const messageArchivedModel = mongoose.model<IMessageArchived>('messagearchived', messageArchivedSchema);
 
 class MessageArchiverd {
     async create(body: Partial<IMessageArchived>, session?: ClientSession): Promise<IMessageArchived> {

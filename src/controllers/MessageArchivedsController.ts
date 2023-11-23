@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
-import messagesDB, { IMessage } from '../models/Messages';
+import { IMessage } from '../models/schemas/messageSchema';
+import messagesDB from '../models/Messages';
 import { messageValidator } from '../config/validators';
 import mongoose from 'mongoose';
-import messageArchivedsDB, { IMessageArchived } from '../models/MessageArchiveds';
+import { IMessageArchived } from '../models/schemas/messageArchivedSchema';
+import messageArchivedsDB from '../models/MessageArchiveds';
 import { MessageRequest } from '../types/types';
 
 class MessageArchivedsController {

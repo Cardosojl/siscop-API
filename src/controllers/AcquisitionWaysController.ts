@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AcquisitionWayRequest } from '../types/types';
-import acquisitionDB, { IAcquisitionWay } from '../models/AcquisitionWays';
+import { IAcquisitionWay } from '../models/schemas/acquisitionWaySchema';
+import acquisitionDB from '../models/AcquisitionWays';
 import { acquisitionWayValidator } from '../config/validators';
 
 class AcquisitionWaysController {
