@@ -6,7 +6,7 @@ const config = {
         url: process.env.dbURI,
 
         // TODO Change this to your database name:
-        databaseName: 'siscop01',
+        databaseName: process.env.dbNAME,
 
         options: {
             useNewUrlParser: true, // removes a deprecation warning when connecting

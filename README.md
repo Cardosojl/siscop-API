@@ -32,9 +32,10 @@ where the data, necessary for the perfect functioning of that application, are k
 ### Fill in the .env with the necessary information
 1. PORT= (port value the API will run on)
 2. HOST= (api host)
-3. dbURI= (mongodb uri) ex: `mongodb://username:password@host:port/database?options`
-4. SECRET= (session secret)
-5. ORIGIN= (origins that will be allowed in cors. They need to be separated by commas ',')
+3. dbNAME = (your database name)
+4. dbURI= (mongodb uri) ex: `mongodb://username:password@host:port/databaseNAME?options`
+5. SECRET= (session secret)
+6. ORIGIN= (origins that will be allowed in cors. They need to be separated by commas ',')
 
 ### Initiate DataBase with initial values
  ```bash
