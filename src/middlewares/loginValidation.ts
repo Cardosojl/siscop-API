@@ -11,7 +11,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     const [, token] = authorization.split(' ');
 
     try {
-        const datas = jwt.verify(token, process.env.TOKEN_SECRET as string);
+        const datas = jwt.verify(token, process.env.SECRET as string);
         const { id, name } = datas as { id: string; name: string };
         const user = await usersDB.findOne({ _id: id });
         if (user && user.name !== name) {
