@@ -17,11 +17,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         if (user && user.name !== name) {
             return res.status(401).json({ error: ['Token expirado ou inválido.'] });
         }
-        //req.userId = id;
-        //req.userEmail = email;
         return next();
     } catch (error) {
-        console.log(error);
         return res.status(401).json({ error: ['Token expirado ou inválido.'] });
     }
 };
