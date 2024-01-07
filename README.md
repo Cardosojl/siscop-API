@@ -13,7 +13,7 @@ where the data, necessary for the perfect functioning of that application, are k
 + Sessions are managed by express-session and kept in database for 30 minutes.
 
 ## Requirements
-+ Mongodb database with replica set
++ Mongodb database
 
 ## How to install
 ### Clone the project to your machine
