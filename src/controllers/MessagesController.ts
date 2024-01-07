@@ -11,13 +11,10 @@ import { IProcessState } from '../models/schemas/processStateSchema';
 import processStatesDB from '../models/ProcessStates';
 import { MessageRequest } from '../types/types';
 import { messageValidator } from '../config/validators';
-import mongoose, { ClientSession } from 'mongoose';
 
 class MessagesController {
     async store(req: Request, res: Response): Promise<Response> {
-        const session = await mongoose.startSession();
         try {
-            session.startTransaction();
             let body = req.body as Partial<MessageRequest>;
             const date = Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date());
             body = { ...body, date: date };
@@ -39,18 +36,15 @@ class MessagesController {
                 body = { ...body, process_title: 'Sem Processo' };
             }
             if (body.receiver) {
-                return await handleReceiver(res, body, sender, session);
+                return await handleReceiver(res, body, sender);
             }
             if (body.section_receiver) {
-                return await handleSectionReceiver(res, body, sender, session);
+                return await handleSectionReceiver(res, body, sender);
             }
             return res.status(400).json({ errors: [{ message: 'É necessário um receiver ou uma section_receiver!' }] });
         } catch (error) {
             console.log(error);
-            await session.abortTransaction();
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
-        } finally {
-            session.endSession();
         }
     }
 
@@ -125,42 +119,37 @@ class MessagesController {
     }
 }
 
-async function handleReceiver(res: Response, body: Partial<MessageRequest>, sender: IUser, session: ClientSession): Promise<Response> {
+async function handleReceiver(res: Response, body: Partial<MessageRequest>, sender: IUser): Promise<Response> {
     const receiver: IUser | null = await usersDB.findOne({ _id: body.receiver as string });
     if (!receiver) return res.status(404).json({ errors: [{ message: 'Receiver não encontrado!' }] });
-    const messageSent: IMessageSent = await messagesSentsDB.create(body, session);
-    const message = await messagesDB.create(body, session);
+    const messageSent: IMessageSent = await messagesSentsDB.create(body);
+    const message = await messagesDB.create(body);
     if (body.process) {
-        const processState: IProcessState = await processStatesDB.createNewMessage({ _id: body.process as string }, sender, receiver, session);
-        const processU = await processesDB.updateOne({ _id: body.process as string }, { user: null, receiver: receiver._id }, session);
-        await session.commitTransaction();
+        const processState: IProcessState = await processStatesDB.createNewMessage({ _id: body.process as string }, sender, receiver);
+        const processU = await processesDB.updateOne({ _id: body.process as string }, { user: null, receiver: receiver._id });
         return res.status(201).json({ response: { message, messageSent, processU, processState } });
     } else {
-        await session.commitTransaction();
         return res.status(201).json({ response: messageSent });
     }
 }
 
-async function handleSectionReceiver(res: Response, body: Partial<MessageRequest>, sender: IUser, session: ClientSession): Promise<Response> {
+async function handleSectionReceiver(res: Response, body: Partial<MessageRequest>, sender: IUser): Promise<Response> {
     const users: IUser[] | null = await usersDB.findAll({ section: body.section_receiver as string }, 'section', 'section');
     if (users?.length === 0) return res.status(404).json({ errors: [{ message: 'Nenhum usuário cadastrado nesta seção ou seção inválida!' }] });
-    const messageSent: IMessageSent = await messagesSentsDB.create(body, session);
+    const messageSent: IMessageSent = await messagesSentsDB.create(body);
     for (const receiver of users as IUser[]) {
-        await messagesDB.create({ ...body, receiver: receiver._id }, session);
+        await messagesDB.create({ ...body, receiver: receiver._id });
     }
     if (body.process) {
         const processState: IProcessState = await processStatesDB.createNewMessage(
             { _id: body.process as string },
             sender,
-            (users as IUser[])[0].section as Partial<IUser>,
-            session
+            (users as IUser[])[0].section as Partial<IUser>
         );
-        // eslint-disable-next-line prettier/prettier
-        const processU = await processesDB.updateOne({ _id: body.process as string }, { user: undefined, section_receiver: body.section_receiver as string }, session);
-        await session.commitTransaction();
+
+        const processU = await processesDB.updateOne({ _id: body.process as string }, { user: undefined, section_receiver: body.section_receiver as string });
         return res.status(201).json({ response: { messageSent, processU, processState } });
     } else {
-        await session.commitTransaction();
         return res.status(201).json({ response: messageSent });
     }
 }

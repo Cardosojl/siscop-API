@@ -83,7 +83,7 @@ class Processes {
         }
     }
 
-    async deleteOne(parameter: Partial<ProcessRequest>, session: ClientSession): Promise<mongo.DeleteResult> {
+    async deleteOne(parameter: Partial<ProcessRequest>, session?: ClientSession): Promise<mongo.DeleteResult> {
         try {
             const process: mongo.DeleteResult = await processModel.deleteOne(parameter, { session });
             return process;

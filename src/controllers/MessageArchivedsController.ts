@@ -2,14 +2,12 @@ import { Request, Response } from 'express';
 import { IMessage } from '../models/schemas/messageSchema';
 import messagesDB from '../models/Messages';
 import { messageValidator } from '../config/validators';
-import mongoose from 'mongoose';
 import { IMessageArchived } from '../models/schemas/messageArchivedSchema';
 import messageArchivedsDB from '../models/MessageArchiveds';
 import { MessageRequest } from '../types/types';
 
 class MessageArchivedsController {
     async store(req: Request, res: Response): Promise<Response> {
-        const session = await mongoose.startSession();
         try {
             let body = req.body as Partial<MessageRequest>;
             const date = Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date());
@@ -18,22 +16,17 @@ class MessageArchivedsController {
             if (bodyValidation.length > 0) return res.status(400).json({ errors: bodyValidation });
             const message: IMessage | null = await messagesDB.findOne({ _id: body.message as string }, '-_id');
             if (!message) return res.status(404).json({ errors: [{ message: 'Message não encontrada!' }] });
-            session.startTransaction();
             const archivedValues: Partial<MessageRequest> = {};
             messageArchivedsDB
                 .fields()
                 .filter((element) => element !== '_id' && message[element as keyof IMessage])
                 .forEach((element) => (archivedValues[element] = `${message[element as keyof IMessage]}`));
-            const archived: IMessageArchived = await messageArchivedsDB.create(archivedValues, session);
-            await messagesDB.deleteOne({ _id: body.message } as Partial<IMessage>, session);
-            await session.commitTransaction();
+            const archived: IMessageArchived = await messageArchivedsDB.create(archivedValues);
+            await messagesDB.deleteOne({ _id: body.message } as Partial<IMessage>);
             return res.status(201).json({ response: archived });
         } catch (error) {
             console.log(error);
-            await session.abortTransaction();
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
-        } finally {
-            session.endSession();
         }
     }
 

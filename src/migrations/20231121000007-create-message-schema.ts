@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import * as path from 'path';
 import { createSchema, removeSchema } from '../../utils/schemaManager';
+import { IUser } from './20231121000001-create-user-schema';
 
 //This file must be edited directly by migration.
 import mongoose, { Schema, Types } from 'mongoose';
@@ -69,6 +70,18 @@ module.exports = {
             const messageModel = mongoose.model<IMessage>('message', messageSchema);
             await messageModel.createCollection();
             await messageModel.createIndexes();
+            const user = await mongoose.model<IUser>('user').findOne({ name: 'ADM' });
+            await messageModel.create({
+                receiver: user?._id,
+                sender: user?._id,
+                title: 'Boas Vindas',
+                process_title: 'Sem Processo',
+                content:
+                    '<p style="text-align: center;">Seja bem vindo ao Sistema de Compras Públicas</p><p style="text-align: \
+                    center;">Esse é um sistema desenvolvido para gerenciamento e para facilitação do criamento de processos licitatórios.</p><p \
+                    style="text-align: left;"><br></p>',
+                date: Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date()),
+            });
             await createSchema(path.join(dirname, filename), path.join(dirname, '..', 'models', 'schemas', 'messageSchema.ts'));
         } catch (error) {
             console.log(error);

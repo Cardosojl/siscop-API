@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { IProcess } from '../models/schemas/processSchema';
 import procesesDB from '../models/Processes';
 import { IUser } from '../models/schemas/userSchema';
@@ -16,7 +15,6 @@ import { processValidator } from '../config/validators';
 
 class ProcessesController {
     async store(req: Request, res: Response): Promise<Response> {
-        const session = await mongoose.startSession();
         try {
             let body = req.body as Partial<ProcessRequest>;
             const date = Intl.DateTimeFormat('pt-BR', { dateStyle: 'full', timeStyle: 'short' }).format(new Date());
@@ -27,25 +25,20 @@ class ProcessesController {
             if (!user) return res.status(404).json({ errors: [{ message: 'User não encontrado!' }] });
             const section: ISection | null = await sectionsDB.findOne({ _id: body.origin } as Partial<SectionRequest>);
             if (!section) return res.status(404).json({ errors: [{ message: 'Section não encontrada!' }] });
-            session.startTransaction();
             const year: IYear | null = await yearsDB.findOne({ year: new Date().getFullYear().toString() });
-            if (!year) yearsDB.create({ year: body.year } as Partial<YearRequest>, session);
-            const process: IProcess | null = await procesesDB.create(body, session);
+            if (!year) await yearsDB.create({ year: body.year } as Partial<YearRequest>);
+            const process: IProcess | null = await procesesDB.create(body);
             const newState: IProcessState = {
                 process: process._id as string,
                 state: 'Processo Cadastrado',
                 anotation: `Processo Cadastrado Por ${user.name}`,
                 date: date,
             };
-            const state: IProcessState = await processStatesDB.create(newState, session);
-            await session.commitTransaction();
+            const state: IProcessState = await processStatesDB.create(newState);
             return res.status(201).json({ response: { process, state } });
         } catch (error) {
             console.log(error);
-            await session.abortTransaction();
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
-        } finally {
-            session.endSession();
         }
     }
 
@@ -152,7 +145,6 @@ class ProcessesController {
     }
 
     async delete(req: Request, res: Response): Promise<Response> {
-        const session = await mongoose.startSession();
         try {
             const query = req.query as Partial<ProcessRequest>;
             const fields: (keyof IProcess)[] = procesesDB.fields();
@@ -164,18 +156,13 @@ class ProcessesController {
             param.forEach((element) => (parameter[element] = `${query[element]}`));
             const process: IProcess | null = await procesesDB.findOne(parameter);
             if (!process) return res.status(200).json({ response: null });
-            session.startTransaction();
-            const statesD = await processStatesDB.deleteMany({ process: process._id }, session);
-            const filesD = await filesDB.deleteMany({ process: process._id }, session);
-            const processD = await procesesDB.deleteOne(parameter, session);
-            await session.commitTransaction();
+            const statesD = await processStatesDB.deleteMany({ process: process._id });
+            const filesD = await filesDB.deleteMany({ process: process._id });
+            const processD = await procesesDB.deleteOne(parameter);
             return res.status(200).json({ response: { processD, statesD, filesD } });
         } catch (error) {
             console.log(error);
-            await session.abortTransaction();
             return res.status(500).json({ errors: [{ message: (error as Record<string, string>).message }] });
-        } finally {
-            session.endSession();
         }
     }
 }
